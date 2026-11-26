@@ -1,0 +1,1070 @@
+{
+ "congelado_el": "2026-11-22",
+ "pedidos": {
+  "1": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "celular",
+    "marca": "Samsung",
+    "modelo": "Galaxy S26",
+    "almacenamiento_gb": 256,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": "negro",
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 4000000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0101",
+   "top3": [
+    "MCOSIM0101",
+    "MCOSIM0102",
+    "MCOSIM0103"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0104": "otro_color",
+    "MCOSIM0105": "otra_especificacion",
+    "MCOSIM0106": "otro_modelo",
+    "MCOSIM0107": "otro_estado",
+    "MCOSIM0108": "vendedor_no_confiable",
+    "MCOSIM0109": "otro_producto",
+    "MCOSIM0110": "otro_modelo",
+    "MCOSIM0111": "sobre_presupuesto"
+   }
+  },
+  "2": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "portatil",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": 16,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 2500000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0201",
+   "top3": [
+    "MCOSIM0201",
+    "MCOSIM0202",
+    "MCOSIM0203"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0205": "otra_especificacion",
+    "MCOSIM0206": "sobre_presupuesto",
+    "MCOSIM0207": "otro_estado",
+    "MCOSIM0208": "vendedor_no_confiable"
+   }
+  },
+  "3": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "freidora_de_aire",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": 5,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": "2026-11-26",
+    "ciudad": "Ibagué",
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {
+    "fecha_limite": 1
+   },
+   "ganador": "MCOSIM0301",
+   "top3": [
+    "MCOSIM0301",
+    "MCOSIM0302",
+    "MCOSIM0303"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0304": "llega_tarde",
+    "MCOSIM0305": "llega_tarde",
+    "MCOSIM0306": "otra_especificacion",
+    "MCOSIM0307": "otro_estado",
+    "MCOSIM0308": "otro_producto"
+   }
+  },
+  "4": {
+   "accion": "preguntar",
+   "situacion": null,
+   "interpretacion": {
+    "accion": "preguntar",
+    "producto": null,
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": null,
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {}
+  },
+  "5": {
+   "accion": "aclarar",
+   "situacion": null,
+   "interpretacion": {
+    "accion": "aclarar",
+    "producto": null,
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": null,
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": "otra_tienda"
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {}
+  },
+  "6": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "celular",
+    "marca": "Apple",
+    "modelo": "iPhone 16",
+    "almacenamiento_gb": 128,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0601",
+   "top3": [
+    "MCOSIM0601",
+    "MCOSIM0602",
+    "MCOSIM0603"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0604": "otro_modelo",
+    "MCOSIM0605": "otro_modelo",
+    "MCOSIM0606": "otra_especificacion",
+    "MCOSIM0607": "otro_estado",
+    "MCOSIM0608": "vendedor_no_confiable",
+    "MCOSIM0609": "otro_producto"
+   }
+  },
+  "7": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "audifonos",
+    "marca": "Sony",
+    "modelo": "WH-1000XM5",
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0701",
+   "top3": [
+    "MCOSIM0701",
+    "MCOSIM0702",
+    "MCOSIM0703"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0704": "texto_sospechoso",
+    "MCOSIM0705": "otro_modelo",
+    "MCOSIM0706": "otra_marca",
+    "MCOSIM0707": "otro_estado",
+    "MCOSIM0708": "otro_producto"
+   }
+  },
+  "8": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "consola",
+    "marca": "Sony",
+    "modelo": "PlayStation 5 Slim",
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": "disco",
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0801",
+   "top3": [
+    "MCOSIM0801",
+    "MCOSIM0802",
+    "MCOSIM0803"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0804": "otra_especificacion",
+    "MCOSIM0805": "otro_modelo",
+    "MCOSIM0806": "otro_producto",
+    "MCOSIM0807": "otro_estado",
+    "MCOSIM0808": "vendedor_no_confiable",
+    "MCOSIM0809": "otro_producto"
+   }
+  },
+  "9": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "celular",
+    "marca": "Xiaomi",
+    "modelo": "Redmi Note 14",
+    "almacenamiento_gb": 256,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM0901",
+   "top3": [
+    "MCOSIM0901",
+    "MCOSIM0902",
+    "MCOSIM0903"
+   ],
+   "descartes_esperados": {
+    "MCOSIM0904": "otra_especificacion",
+    "MCOSIM0905": "otro_modelo",
+    "MCOSIM0906": "otro_modelo",
+    "MCOSIM0907": "sin_dato",
+    "MCOSIM0908": "otro_producto",
+    "MCOSIM0909": "vendedor_no_confiable"
+   },
+   "v2": {
+    "ganador": "MCOSIM0907",
+    "top3": [
+     "MCOSIM0907",
+     "MCOSIM0902",
+     "MCOSIM0901"
+    ],
+    "nota": "Con el Lector de atributos, MCOSIM0907 (256GB en el título) deja de quedar fuera por «sin dato» y gana por menor precio total."
+   }
+  },
+  "10": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "lector_libros",
+    "marca": "Amazon",
+    "modelo": "Kindle Paperwhite",
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1001",
+   "top3": [
+    "MCOSIM1001",
+    "MCOSIM1002",
+    "MCOSIM1003"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1004": "otro_modelo",
+    "MCOSIM1005": "otro_modelo",
+    "MCOSIM1006": "otro_producto",
+    "MCOSIM1007": "otro_estado",
+    "MCOSIM1008": "vendedor_no_confiable"
+   }
+  },
+  "11": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "tablet",
+    "marca": "Samsung",
+    "modelo": "Galaxy Tab S10 FE",
+    "almacenamiento_gb": 128,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1101",
+   "top3": [
+    "MCOSIM1101",
+    "MCOSIM1102",
+    "MCOSIM1103"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1104": "otro_modelo",
+    "MCOSIM1105": "otro_modelo",
+    "MCOSIM1106": "otra_especificacion",
+    "MCOSIM1107": "otro_producto",
+    "MCOSIM1108": "vendedor_no_confiable"
+   }
+  },
+  "12": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "portatil",
+    "marca": "Lenovo",
+    "modelo": "IdeaPad Slim 3",
+    "almacenamiento_gb": 512,
+    "ram_gb": 16,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1201",
+   "top3": [
+    "MCOSIM1201",
+    "MCOSIM1202",
+    "MCOSIM0202"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1203": "otra_especificacion",
+    "MCOSIM1204": "otro_modelo",
+    "MCOSIM1205": "otra_especificacion",
+    "MCOSIM1206": "otro_estado",
+    "MCOSIM1207": "otro_producto"
+   }
+  },
+  "13": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "pulsera_inteligente",
+    "marca": "Xiaomi",
+    "modelo": "Smart Band 9",
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1301",
+   "top3": [
+    "MCOSIM1301",
+    "MCOSIM1302",
+    "MCOSIM1303"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1304": "otro_modelo",
+    "MCOSIM1305": "otro_modelo",
+    "MCOSIM1306": "otro_producto",
+    "MCOSIM1307": "otra_marca",
+    "MCOSIM1308": "otro_estado"
+   }
+  },
+  "14": {
+   "accion": "recomendar",
+   "situacion": "fuera_de_presupuesto",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "celular",
+    "marca": "Samsung",
+    "modelo": "Galaxy A56",
+    "almacenamiento_gb": 256,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 1200000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1401",
+   "top3": [
+    "MCOSIM1401",
+    "MCOSIM1402",
+    "MCOSIM1403"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1404": "otra_especificacion",
+    "MCOSIM1405": "otro_modelo",
+    "MCOSIM1406": "otro_estado",
+    "MCOSIM1407": "vendedor_no_confiable",
+    "MCOSIM1408": "otro_producto"
+   }
+  },
+  "15": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "televisor",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": 55,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 2000000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1501",
+   "top3": [
+    "MCOSIM1501",
+    "MCOSIM1502",
+    "MCOSIM1503"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1506": "otra_especificacion",
+    "MCOSIM1507": "otra_especificacion",
+    "MCOSIM1508": "sobre_presupuesto",
+    "MCOSIM1509": "otro_producto",
+    "MCOSIM1510": "texto_sospechoso"
+   }
+  },
+  "16": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "disco_ssd",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": 1000,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1601",
+   "top3": [
+    "MCOSIM1601",
+    "MCOSIM1602",
+    "MCOSIM1603"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1605": "otra_especificacion",
+    "MCOSIM1606": "otro_producto",
+    "MCOSIM1607": "otra_especificacion",
+    "MCOSIM1608": "vendedor_no_confiable",
+    "MCOSIM1609": "vendedor_no_confiable"
+   }
+  },
+  "17": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "memoria_microsd",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": 128,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1701",
+   "top3": [
+    "MCOSIM1701",
+    "MCOSIM1702",
+    "MCOSIM1703"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1704": "vendedor_no_confiable",
+    "MCOSIM1705": "otra_especificacion",
+    "MCOSIM1706": "otra_especificacion",
+    "MCOSIM1707": "otro_producto",
+    "MCOSIM1708": "vendedor_no_confiable"
+   }
+  },
+  "18": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "nevera",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": 300,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 2500000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1801",
+   "top3": [
+    "MCOSIM1801",
+    "MCOSIM1802",
+    "MCOSIM1803"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1804": "otra_especificacion",
+    "MCOSIM1805": "sobre_presupuesto",
+    "MCOSIM1806": "otro_estado",
+    "MCOSIM1807": "vendedor_no_confiable",
+    "MCOSIM1808": "otro_producto"
+   }
+  },
+  "19": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "lavadora",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": 18,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 1800000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM1901",
+   "top3": [
+    "MCOSIM1901",
+    "MCOSIM1902",
+    "MCOSIM1903"
+   ],
+   "descartes_esperados": {
+    "MCOSIM1905": "otra_especificacion",
+    "MCOSIM1906": "sobre_presupuesto",
+    "MCOSIM1907": "otro_producto",
+    "MCOSIM1908": "otro_estado"
+   }
+  },
+  "20": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "silla_oficina",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 600000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2001",
+   "top3": [
+    "MCOSIM2001",
+    "MCOSIM2002",
+    "MCOSIM2003"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2006": "texto_sospechoso",
+    "MCOSIM2007": "sobre_presupuesto",
+    "MCOSIM2008": "otro_producto",
+    "MCOSIM2009": "otro_estado"
+   }
+  },
+  "21": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "taladro",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 400000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2101",
+   "top3": [
+    "MCOSIM2101",
+    "MCOSIM2102",
+    "MCOSIM2103"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2105": "sobre_presupuesto",
+    "MCOSIM2106": "otro_producto",
+    "MCOSIM2107": "vendedor_no_confiable",
+    "MCOSIM2108": "otro_estado"
+   }
+  },
+  "22": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "cafetera",
+    "marca": "Nespresso",
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2201",
+   "top3": [
+    "MCOSIM2201",
+    "MCOSIM2202",
+    "MCOSIM2203"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2204": "otra_marca",
+    "MCOSIM2205": "otro_producto",
+    "MCOSIM2206": "otra_marca",
+    "MCOSIM2207": "otro_estado",
+    "MCOSIM2208": "vendedor_no_confiable"
+   }
+  },
+  "23": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "monitor",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": 27,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 900000,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2301",
+   "top3": [
+    "MCOSIM2301",
+    "MCOSIM2302",
+    "MCOSIM2303"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2305": "otra_especificacion",
+    "MCOSIM2306": "sobre_presupuesto",
+    "MCOSIM2307": "otro_producto"
+   }
+  },
+  "24": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "celular",
+    "marca": "Apple",
+    "modelo": "iPhone 15",
+    "almacenamiento_gb": 128,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "reacondicionado",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2401",
+   "top3": [
+    "MCOSIM2401",
+    "MCOSIM2402",
+    "MCOSIM2403"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2404": "otro_estado",
+    "MCOSIM2405": "otro_estado",
+    "MCOSIM2406": "otro_modelo",
+    "MCOSIM2407": "otra_especificacion",
+    "MCOSIM2408": "vendedor_no_confiable"
+   }
+  },
+  "25": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "audifonos",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": 150000,
+    "fecha_limite": "2026-11-23",
+    "ciudad": "Bogotá",
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2501",
+   "top3": [
+    "MCOSIM2501",
+    "MCOSIM2502",
+    "MCOSIM2503"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2504": "llega_tarde",
+    "MCOSIM2505": "llega_tarde",
+    "MCOSIM2506": "sobre_presupuesto",
+    "MCOSIM2507": "vendedor_no_confiable"
+   }
+  },
+  "26": {
+   "accion": "recomendar",
+   "situacion": "recomendar",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "cargador",
+    "marca": "Samsung",
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": 45,
+    "color": null,
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": "MCOSIM2601",
+   "top3": [
+    "MCOSIM2601",
+    "MCOSIM2602",
+    "MCOSIM2603"
+   ],
+   "descartes_esperados": {
+    "MCOSIM2605": "otra_marca",
+    "MCOSIM2606": "otra_especificacion",
+    "MCOSIM2607": "otro_producto",
+    "MCOSIM2608": "vendedor_no_confiable"
+   }
+  },
+  "27": {
+   "accion": "recomendar",
+   "situacion": "sin_resultados",
+   "interpretacion": {
+    "accion": "recomendar",
+    "producto": "control",
+    "marca": "Sony",
+    "modelo": "DualSense Edge",
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": "morado",
+    "edicion": null,
+    "condicion": "nuevo",
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {
+    "MCOSIM2701": "otro_color",
+    "MCOSIM2702": "otro_color",
+    "MCOSIM2703": "otro_modelo",
+    "MCOSIM2704": "otro_producto",
+    "MCOSIM2705": "vendedor_no_confiable"
+   }
+  },
+  "28": {
+   "accion": "preguntar",
+   "situacion": null,
+   "interpretacion": {
+    "accion": "preguntar",
+    "producto": "celular",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": null,
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {}
+  },
+  "29": {
+   "accion": "preguntar",
+   "situacion": null,
+   "interpretacion": {
+    "accion": "preguntar",
+    "producto": "televisor",
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": null,
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": null
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {}
+  },
+  "30": {
+   "accion": "aclarar",
+   "situacion": null,
+   "interpretacion": {
+    "accion": "aclarar",
+    "producto": null,
+    "marca": null,
+    "modelo": null,
+    "almacenamiento_gb": null,
+    "ram_gb": null,
+    "pulgadas": null,
+    "litros": null,
+    "kilos": null,
+    "potencia_w": null,
+    "color": null,
+    "edicion": null,
+    "condicion": null,
+    "presupuesto_max": null,
+    "fecha_limite": null,
+    "ciudad": null,
+    "motivo_aclaracion": "pagos"
+   },
+   "tolerancia": {},
+   "ganador": null,
+   "top3": [],
+   "descartes_esperados": {}
+  }
+ }
+}

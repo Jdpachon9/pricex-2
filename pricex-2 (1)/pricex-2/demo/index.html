@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PriceX 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Idea: una sola columna como un chat; el colador muestra cuántas publicaciones saca cada regla y quedan 3. */
+  --fondo: #f2f4f7;
+  --superficie: #ffffff;
+  --tinta: #121a24;
+  --tenue: #586577;
+  --linea: #dce2ea;
+  --acento: #1f3864;
+  --acento-suave: #e4eaf5;
+  --sobre-acento: #ffffff;
+  --ok: #1d7a46;
+  --alerta: #9a5a06;
+  --mal: #b42318;
+  --ok-suave: #e3f3e9;
+  --alerta-suave: #fbefdc;
+  --mal-suave: #fbe6e4;
+  --rep-5: #1d7a46; --rep-4: #5da33b; --rep-3: #c9a100; --rep-2: #d9731a; --rep-1: #b42318;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texto: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radio: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #0e131a; --superficie: #151c25; --tinta: #e6ebf1; --tenue: #9aa5b3; --linea: #273140;
+    --acento: #9db8ea; --acento-suave: #1b2940; --sobre-acento: #0e131a;
+    --ok: #4cc38a; --alerta: #e0a04a; --mal: #f07a6e;
+    --ok-suave: #14301f; --alerta-suave: #33240f; --mal-suave: #3a1714;
+    --rep-5: #4cc38a; --rep-4: #8fd06a; --rep-3: #e2c14a; --rep-2: #f0a050; --rep-1: #f07a6e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #0e131a; --superficie: #151c25; --tinta: #e6ebf1; --tenue: #9aa5b3; --linea: #273140;
+  --acento: #9db8ea; --acento-suave: #1b2940; --sobre-acento: #0e131a;
+  --ok: #4cc38a; --alerta: #e0a04a; --mal: #f07a6e;
+  --ok-suave: #14301f; --alerta-suave: #33240f; --mal-suave: #3a1714;
+  --rep-5: #4cc38a; --rep-4: #8fd06a; --rep-3: #e2c14a; --rep-2: #f0a050; --rep-1: #f07a6e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--fondo); color: var(--tinta);
+  font-family: var(--texto); font-size: 16px; line-height: 1.5;
+}
+.columna { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 { font-size: 34px; letter-spacing: -0.01em; }
+h2 { font-size: 22px; }
+h3 { font-size: 17px; }
+p { margin: 0; }
+.tenue { color: var(--tenue); }
+.chico { font-size: 14px; }
+.cifra { font-variant-numeric: tabular-nums; }
+
+header { display: grid; gap: 8px; }
+header p { max-width: 60ch; }
+
+.controles { display: grid; gap: 12px; }
+.fila-controles { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.segmentos { display: inline-flex; border: 1px solid var(--linea); border-radius: 999px; background: var(--superficie); padding: 3px; }
+.segmentos button {
+  font: inherit; font-size: 15px; font-weight: 600; border: 0; background: transparent; color: var(--tenue);
+  padding: 6px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+}
+.segmentos button[aria-pressed="true"] { background: var(--acento); color: var(--sobre-acento); }
+.segmentos button:disabled { cursor: not-allowed; opacity: 0.55; }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+
+.rejilla { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+.numero {
+  font: inherit; font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums;
+  border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta);
+  border-radius: 8px; padding: 6px 0; cursor: pointer; position: relative;
+}
+.numero.falla { background: var(--alerta-suave); border-color: var(--alerta); color: var(--alerta); }
+.numero.grave { background: var(--mal-suave); border-color: var(--mal); color: var(--mal); }
+.numero[aria-current="true"] { outline: 3px solid var(--acento); outline-offset: 1px; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--tenue); }
+.leyenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--linea); background: var(--superficie); }
+.leyenda .l-falla::before { background: var(--alerta-suave); border-color: var(--alerta); }
+.leyenda .l-grave::before { background: var(--mal-suave); border-color: var(--mal); }
+
+.chat { display: grid; gap: 16px; }
+.burbuja-persona {
+  justify-self: end; max-width: 88%; background: var(--acento); color: var(--sobre-acento);
+  padding: 12px 16px; border-radius: 16px 16px 4px 16px; font-size: 17px;
+}
+.nota-variante { justify-self: end; font-size: 14px; color: var(--tenue); margin-top: -10px; }
+.respuesta { background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px 16px 16px 4px; padding: 16px; display: grid; gap: 18px; }
+
+.veredicto { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: var(--radio); font-size: 15px; }
+.veredicto b { font-weight: 700; }
+.veredicto.ok { background: var(--ok-suave); color: var(--ok); }
+.veredicto.falla { background: var(--alerta-suave); color: var(--alerta); }
+.veredicto.grave { background: var(--mal-suave); color: var(--mal); }
+.veredicto .marca { font-weight: 700; flex: none; }
+
+.bloque { display: grid; gap: 8px; }
+.etiqueta { font-size: 14px; font-weight: 600; color: var(--tenue); }
+.fichas { display: flex; flex-wrap: wrap; gap: 6px; }
+.ficha { border: 1px solid var(--linea); border-radius: 999px; padding: 3px 10px; font-size: 14px; background: var(--fondo); }
+.ficha b { font-weight: 600; color: var(--tenue); margin-right: 4px; }
+.ficha.mal { border-color: var(--alerta); background: var(--alerta-suave); }
+
+.colador { display: grid; gap: 4px; }
+.paso { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: baseline; font-size: 15px; }
+.paso .barra { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--linea); overflow: hidden; }
+.paso .barra i { display: block; height: 100%; background: var(--tenue); opacity: 0.55; }
+.paso.total .barra i { background: var(--tinta); opacity: 0.85; }
+.paso.quedan { font-weight: 700; }
+.paso.quedan .barra i { background: var(--acento); opacity: 1; }
+.paso .n { font-variant-numeric: tabular-nums; font-weight: 600; }
+.paso.sale .n::before { content: "−"; }
+
+.opciones { display: grid; gap: 10px; }
+.opcion { border: 1px solid var(--linea); border-radius: var(--radio); padding: 12px 14px; display: grid; gap: 6px; background: var(--superficie); }
+.opcion.primera { border: 2px solid var(--acento); }
+.cabeza-opcion { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.puesto { font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--tenue); }
+.insignia { font-size: 13px; font-weight: 700; background: var(--acento); color: var(--sobre-acento); border-radius: 999px; padding: 1px 9px; }
+.insignia.cercana { background: var(--alerta); color: var(--superficie); }
+.nombre { font-weight: 600; font-size: 16px; }
+.precio { font-family: var(--display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.datos-opcion { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 14px; color: var(--tenue); }
+.rep::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; background: var(--color-rep, var(--tenue)); vertical-align: 0; }
+
+.mensaje { border-left: 3px solid var(--acento); padding: 2px 0 2px 12px; font-size: 16px; max-width: 65ch; }
+details { border-top: 1px solid var(--linea); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 600; color: var(--acento); }
+.tabla-envoltura { overflow-x: auto; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+th { font-weight: 600; color: var(--tenue); }
+td.cifra, th.cifra { text-align: right; }
+td.cifra { white-space: nowrap; }
+
+.resultados { display: grid; gap: 12px; }
+.pasos { margin: 0; padding-left: 22px; display: grid; gap: 6px; max-width: 65ch; }
+footer { font-size: 14px; color: var(--tenue); border-top: 1px solid var(--linea); padding-top: 16px; display: grid; gap: 4px; }
+.cargando { color: var(--tenue); }
+.rejilla.diez { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+.turno { font-size: 14px; font-weight: 600; color: var(--tenue); justify-self: end; margin-bottom: -10px; }
+.pedido-completo { font-size: 15px; color: var(--tenue); }
+.pedido-completo b { color: var(--tinta); font-weight: 600; }
+.traza { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.traza li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; font-size: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--linea); }
+.traza li:last-child { border-bottom: 0; padding-bottom: 0; }
+.traza .quien { font-weight: 700; }
+.traza .quien small { font-weight: 400; color: var(--tenue); font-size: 13px; margin-left: 6px; }
+.traza .detalle { grid-column: 1 / -1; font-size: 14px; color: var(--tenue); overflow-wrap: anywhere; }
+.resultado-agente { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 1px 9px; align-self: start; background: var(--fondo); color: var(--tenue); border: 1px solid var(--linea); }
+.resultado-agente.usado { background: var(--ok-suave); color: var(--ok); border-color: transparent; }
+.resultado-agente.rechazado, .resultado-agente.fallo { background: var(--alerta-suave); color: var(--alerta); border-color: transparent; }
+.subtabla { display: grid; gap: 6px; }
+.subtabla h3 { font-size: 16px; }
+.resumen-turno { display: grid; gap: 6px; }
+.resumen-turno ol { margin: 0; padding-left: 20px; font-size: 15px; }
+@media (max-width: 480px) { .segmentos button { padding: 6px 10px; font-size: 14px; } }
+@media (max-width: 480px) {
+  h1 { font-size: 28px; }
+  .rejilla { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .burbuja-persona { max-width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .paso .barra i { transition: width 0.35s ease-out; }
+}
+</style>
+</head>
+<body>
+<main class="columna">
+  <header>
+    <h1>PriceX 2.0</h1>
+    <p>Un asistente de compras: le escribes lo que quieres en una frase, revisa decenas de publicaciones y te muestra las 3 mejores, con el porqué. La IA entiende el pedido, las reglas eligen y la persona compra.</p>
+    <p class="tenue chico">Tres versiones con los mismos datos: sin IA (patrones de texto), v1 (un agente de IA) y v2 (un equipo de agentes con tareas fijas; el revisor quedó apagado después de la primera medición). Catálogo simulado de 205 publicaciones, congelado el 22 de noviembre de 2026. Precios, vendedores y entregas son inventados. Proyecto de portafolio, no afiliado a Mercado Libre.</p>
+  </header>
+
+  <section class="controles" aria-label="Elegir pedido">
+    <div class="fila-controles">
+      <div class="segmentos" role="group" aria-label="Examen">
+        <button type="button" data-conjunto="pedidos" aria-pressed="true">Pedidos</button>
+        <button type="button" data-conjunto="variantes" aria-pressed="false">Otras palabras</button>
+        <button type="button" data-conjunto="conversaciones" aria-pressed="false">Conversaciones</button>
+      </div>
+      <div class="segmentos" role="group" aria-label="Versión del asistente">
+        <button type="button" data-modo="sin IA" aria-pressed="true">Sin IA</button>
+        <button type="button" data-modo="v1" aria-pressed="false">V1: un agente</button>
+        <button type="button" data-modo="v2" aria-pressed="false">V2: equipo</button>
+      </div>
+    </div>
+    <p class="tenue chico" id="nota-modo"></p>
+    <div class="rejilla" id="rejilla"></div>
+    <div class="leyenda" aria-hidden="true">
+      <span>Coincide con la respuesta esperada</span>
+      <span class="l-falla">Falló</span>
+      <span class="l-grave">Error grave</span>
+    </div>
+  </section>
+
+  <section class="chat" id="chat" aria-live="polite">
+    <p class="cargando">Cargando las respuestas grabadas…</p>
+  </section>
+
+  <section class="resultados" aria-labelledby="titulo-resultados">
+    <h2 id="titulo-resultados">Cómo le fue en la prueba</h2>
+    <p class="tenue" style="max-width:65ch">La versión sin IA se escribió mirando los 30 pedidos, así que con ellos es un examen que ya conocía. Las medidas que cuentan son las de los pedidos dichos de otra forma, escritos después de congelar su código, y las conversaciones, donde el segundo mensaje cambia algo del primero.</p>
+    <div id="tablas-resultados" class="resultados"></div>
+  </section>
+
+  <section class="resultados" aria-labelledby="titulo-como">
+    <h2 id="titulo-como">Cómo funciona</h2>
+    <ol class="pasos">
+      <li>Tapa los datos sensibles del pedido, como un número de tarjeta, antes de que salga hacia cualquier modelo.</li>
+      <li>En una conversación, la v2 tiene un coordinador que escribe el pedido completo con el cambio («¿y en azul?»). Las otras versiones pegan el mensaje anterior y el nuevo.</li>
+      <li>Interpreta el pedido: producto, marca, modelo, capacidad, presupuesto, fecha y ciudad. Sin IA, con patrones de texto; con IA, con Gemini. En la v2, un revisor propone correcciones y el código solo acepta las que citan el pedido letra por letra.</li>
+      <li>Las reglas revisan cada publicación y descartan lo que no cumple: otro modelo, otra capacidad, otro estado, mala reputación, entrega tarde o fuera de presupuesto. En la v2, si quedan pocas opciones, un buscador intenta otras palabras, y si una publicación no trae en su ficha un dato pedido, un lector lo busca en el título.</li>
+      <li>Ordena lo que queda: si es un modelo exacto, por precio total; si es un pedido abierto, por calificación y luego precio. Ningún agente cambia ese orden. La persona compra desde el enlace.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Juan David Pachón Moya. Construido con asistentes de IA.</span>
+    <span>Esta demo reproduce las respuestas que el asistente dio en las corridas grabadas; no consulta ningún modelo en vivo.</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var estado = { conjunto: "pedidos", modo: "sin IA", n: 1 };
+  var datos = null;
+  var indice = {};
+  var pesos = new Intl.NumberFormat("es-CO");
+  var NOMBRE_MODO = { "sin IA": "Sin IA", "v1": "V1: un agente", "v2": "V2: equipo" };
+  var CONVERSACIONES = ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10"];
+  var REPUTACION = { "5_green": ["verde", "--rep-5"], "4_light_green": ["verde claro", "--rep-4"], "3_yellow": ["amarilla", "--rep-3"], "2_orange": ["naranja", "--rep-2"], "1_red": ["roja", "--rep-1"] };
+  var ACCIONES = { recomendar: "recomendar", preguntar: "preguntar", aclarar: "aclarar" };
+  var CAMPOS = { accion: "la acción", producto: "el producto", marca: "la marca", modelo: "el modelo", almacenamiento_gb: "la capacidad", ram_gb: "la RAM", pulgadas: "el tamaño", litros: "los litros", kilos: "los kilos", potencia_w: "la potencia", color: "el color", edicion: "la edición", condicion: "el estado", presupuesto_max: "el presupuesto", fecha_limite: "la fecha", ciudad: "la ciudad" };
+  var ETIQUETA_CAMPO = { "Producto": "producto", "Marca": "marca", "Modelo": "modelo", "Capacidad": "almacenamiento_gb", "RAM": "ram_gb", "Tamaño": "pulgadas", "Litros": "litros", "Kilos": "kilos", "Potencia": "potencia_w", "Color": "color", "Edición": "edicion", "Estado": "condicion", "Presupuesto": "presupuesto_max", "Llegar a más tardar": "fecha_limite", "Ciudad": "ciudad" };
+
+  function el(etiqueta, clase, texto) {
+    var nodo = document.createElement(etiqueta);
+    if (clase) { nodo.className = clase; }
+    if (texto !== undefined && texto !== null) { nodo.textContent = texto; }
+    return nodo;
+  }
+  function mayuscula(t) { return t ? t.charAt(0).toUpperCase() + t.slice(1) : t; }
+  function plata(v) { return "$" + pesos.format(v); }
+  function clave(modo, conjunto, n) { return modo + "|" + conjunto + "|" + n; }
+  function hayModo(modo) { return datos.respuestas.some(function (r) { return r.modo === modo; }); }
+  function numeros() {
+    if (estado.conjunto === "conversaciones") { return CONVERSACIONES; }
+    var lista = [];
+    for (var n = 1; n <= 30; n++) { lista.push(n); }
+    return lista;
+  }
+
+  function estadoDe(r) {
+    if (r.acierto.grave) { return "grave"; }
+    if (!r.acierto.accion || (r.esperado.accion === "recomendar" && !r.acierto.top1)) { return "falla"; }
+    return "ok";
+  }
+
+  function leerHash() {
+    var m = /^#(pedido|variante)-(\d{1,2})$/.exec(location.hash);
+    var c = /^#conversacion-(C\d{1,2})$/.exec(location.hash);
+    if (m) {
+      estado.conjunto = m[1] === "pedido" ? "pedidos" : "variantes";
+      estado.n = Math.min(30, Math.max(1, parseInt(m[2], 10)));
+    } else if (c && CONVERSACIONES.indexOf(c[1]) >= 0) {
+      estado.conjunto = "conversaciones";
+      estado.n = c[1];
+    }
+  }
+  function escribirHash() {
+    var nombre = estado.conjunto === "conversaciones" ? "conversacion-" + estado.n : (estado.conjunto === "pedidos" ? "pedido-" : "variante-") + estado.n;
+    if (location.hash !== "#" + nombre) {
+      try { history.replaceState(null, "", "#" + nombre); } catch (e) { location.hash = nombre; }
+    }
+  }
+
+  function pintarControles() {
+    document.querySelectorAll("[data-conjunto]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.conjunto === estado.conjunto)); });
+    document.querySelectorAll("[data-modo]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.modo === estado.modo));
+      var hay = hayModo(b.dataset.modo);
+      b.disabled = !hay;
+      b.title = hay ? "" : "Se activa cuando se corra el cuaderno con Gemini";
+    });
+    var conIA = hayModo("v1") || hayModo("v2");
+    document.getElementById("nota-modo").textContent = conIA
+      ? "Respuestas grabadas: sin IA y, con IA, la corrida 2 con " + (datos.modelo || "Gemini") + ", la de después de los cambios."
+      : "Las versiones con IA (v1 y v2) se activan cuando se corra el cuaderno con Gemini. Por ahora se ve la versión sin IA.";
+    var rejilla = document.getElementById("rejilla");
+    rejilla.textContent = "";
+    rejilla.className = "rejilla" + (estado.conjunto === "conversaciones" ? " diez" : "");
+    numeros().forEach(function (n) {
+      var r = indice[clave(estado.modo, estado.conjunto, n)];
+      var b = el("button", "numero " + (r ? estadoDe(r) : ""), String(n));
+      b.type = "button";
+      b.dataset.n = String(n);
+      var descripcion = r ? (r.turnos ? r.que_prueba : r.pedido) : "";
+      b.setAttribute("aria-label", (estado.conjunto === "conversaciones" ? "Conversación " : "Pedido ") + n + (descripcion ? ": " + descripcion : ""));
+      if (String(n) === String(estado.n)) { b.setAttribute("aria-current", "true"); }
+      rejilla.appendChild(b);
+    });
+  }
+
+  function veredicto(r) {
+    var caja = el("div", "veredicto " + estadoDe(r));
+    var marca = el("span", "marca", estadoDe(r) === "ok" ? "✓" : "✗");
+    marca.setAttribute("aria-hidden", "true");
+    var texto = el("span");
+    if (estadoDe(r) === "ok") {
+      texto.textContent = r.esperado.accion === "recomendar" ? "Coincide con la respuesta esperada." : "Hizo lo esperado: " + ACCIONES[r.esperado.accion] + ".";
+    } else {
+      var partes = [];
+      if (!r.acierto.accion) {
+        if (r.turnos) { partes.push("Debía " + r.acciones_esperadas.map(function (a) { return ACCIONES[a]; }).join(" y luego ") + ", y no lo hizo así."); }
+        else { partes.push("Debía " + ACCIONES[r.esperado.accion] + " y decidió " + ACCIONES[r.accion] + "."); }
+      }
+      if (r.acierto.grave) { partes.push("Error grave: la primera opción " + r.acierto.motivo_grave.replace(/^[a-z_]+: /, "") + "."); }
+      if (r.esperado.accion === "recomendar" && !r.acierto.top1 && r.esperado.ganador_nombre) { partes.push("La mejor opción esperada era " + r.esperado.ganador_nombre + " (" + r.esperado.ganador + ")."); }
+      if (r.esperado.situacion === "sin_resultados" && !r.acierto.top1) { partes.push("Lo esperado era decir que ninguna publicación cumple."); }
+      if (r.acierto.campos_fallados) {
+        var campos = r.acierto.campos_fallados.split(", ").filter(function (c) { return c && c !== "accion"; }).map(function (c) { return CAMPOS[c] || c; });
+        if (campos.length) { partes.push("Entendió mal " + campos.join(", ") + "."); }
+      }
+      texto.textContent = partes.join(" ");
+    }
+    caja.appendChild(marca);
+    caja.appendChild(texto);
+    return caja;
+  }
+
+  function bloqueEntendi(r, malos) {
+    var bloque = el("div", "bloque");
+    bloque.appendChild(el("p", "etiqueta", "Lo que entendió"));
+    var fichas = el("div", "fichas");
+    if (!r.entendi.length) { fichas.appendChild(el("span", "ficha", "Nada que sirva para buscar")); }
+    var vistos = {};
+    r.entendi.forEach(function (par) {
+      vistos[ETIQUETA_CAMPO[par[0]]] = true;
+      var ficha = el("span", "ficha" + (malos.indexOf(ETIQUETA_CAMPO[par[0]]) >= 0 ? " mal" : ""));
+      ficha.appendChild(el("b", null, par[0]));
+      ficha.appendChild(document.createTextNode(par[1]));
+      fichas.appendChild(ficha);
+    });
+    Object.keys(ETIQUETA_CAMPO).forEach(function (etiqueta) {
+      var campo = ETIQUETA_CAMPO[etiqueta];
+      if (malos.indexOf(campo) >= 0 && !vistos[campo]) {
+        var ficha = el("span", "ficha mal");
+        ficha.appendChild(el("b", null, etiqueta));
+        ficha.appendChild(document.createTextNode("no lo entendió"));
+        fichas.appendChild(ficha);
+      }
+    });
+    bloque.appendChild(fichas);
+    return bloque;
+  }
+
+  function bloqueColador(r) {
+    var bloque = el("div", "bloque");
+    bloque.appendChild(el("p", "etiqueta", "El colador"));
+    var lista = el("div", "colador");
+    function paso(clase, texto, n) {
+      var fila = el("div", "paso " + clase);
+      fila.appendChild(el("span", null, texto));
+      fila.appendChild(el("span", "n", String(n)));
+      var barra = el("span", "barra");
+      var relleno = el("i");
+      relleno.style.width = (r.revisadas ? Math.max(2, 100 * n / r.revisadas) : 0) + "%";
+      barra.appendChild(relleno);
+      fila.appendChild(barra);
+      lista.appendChild(fila);
+    }
+    paso("total", "Publicaciones que trajo la búsqueda", r.revisadas);
+    r.colador.forEach(function (c) { paso("sale", mayuscula(c[2]), c[1]); });
+    paso("quedan", "Cumplen todo", r.validas || 0);
+    bloque.appendChild(lista);
+    return bloque;
+  }
+
+  function tarjeta(o, r) {
+    var caja = el("article", "opcion" + (o.puesto === 1 ? " primera" : ""));
+    var cabeza = el("div", "cabeza-opcion");
+    cabeza.appendChild(el("span", "puesto", String(o.puesto)));
+    if (o.puesto === 1) {
+      cabeza.appendChild(el("span", "insignia" + (r.situacion === "fuera_de_presupuesto" ? " cercana" : ""), r.situacion === "fuera_de_presupuesto" ? "La más cercana" : "Recomendada"));
+    }
+    cabeza.appendChild(el("span", "nombre", o.nombre));
+    caja.appendChild(cabeza);
+    caja.appendChild(el("div", "precio", plata(o.total)));
+    var linea1 = el("div", "datos-opcion");
+    linea1.appendChild(el("span", null, o.envio ? "Precio " + plata(o.precio) + " más " + plata(o.envio) + " de envío" : "Envío gratis"));
+    if (o.llega) { linea1.appendChild(el("span", null, "Llega el " + o.llega + (o.dias === 1 ? " (1 día)" : " (" + o.dias + " días)"))); }
+    caja.appendChild(linea1);
+    var linea2 = el("div", "datos-opcion");
+    var rep = REPUTACION[o.reputacion] || ["sin dato", "--tenue"];
+    var vendedor = el("span", "rep", (o.oficial ? "Tienda oficial" : o.vendedor) + ", reputación " + rep[0] + ", " + pesos.format(o.ventas) + " ventas");
+    vendedor.style.setProperty("--color-rep", "var(" + rep[1] + ")");
+    linea2.appendChild(vendedor);
+    if (o.cuotas) { linea2.appendChild(el("span", null, o.cuotas + " cuotas sin interés")); }
+    linea2.appendChild(el("span", null, mayuscula(o.calificacion)));
+    caja.appendChild(linea2);
+    var pie = "Publicación simulada " + o.id;
+    if (o.leido_del_titulo) { pie += ". Un dato sale del título, porque su ficha técnica no lo trae"; }
+    caja.appendChild(el("div", "datos-opcion", pie));
+    return caja;
+  }
+
+  function bloqueTraza(r) {
+    var bloque = el("div", "bloque");
+    bloque.appendChild(el("p", "etiqueta", "Qué hizo cada agente" + (r.consultas !== null && r.consultas !== undefined ? " (" + r.consultas + " consultas al modelo)" : "")));
+    var lista = el("ol", "traza");
+    r.traza.forEach(function (p) {
+      var fila = el("li");
+      var quien = el("span", "quien", p.quien);
+      quien.appendChild(el("small", null, p.ia ? "IA" : "código"));
+      fila.appendChild(quien);
+      fila.appendChild(el("span", "resultado-agente " + p.resultado.replace(" ", "-").replace("ó", "o"), p.resultado));
+      fila.appendChild(el("span", "detalle", mayuscula(p.que) + (p.detalle ? ". " + mayuscula(p.detalle) : "")));
+      lista.appendChild(fila);
+    });
+    bloque.appendChild(lista);
+    return bloque;
+  }
+
+  function tablaDescartes(r) {
+    var detalles = el("details");
+    detalles.appendChild(el("summary", null, "Ver las " + r.descartes.length + " descartadas, una por una"));
+    var envoltura = el("div", "tabla-envoltura");
+    var tabla = el("table");
+    var cabeza = el("tr");
+    ["Publicación", "Qué es", "Por qué quedó fuera"].forEach(function (t) { cabeza.appendChild(el("th", null, t)); });
+    tabla.appendChild(cabeza);
+    r.descartes.forEach(function (d) {
+      var fila = el("tr");
+      fila.appendChild(el("td", null, d.id));
+      fila.appendChild(el("td", null, d.nombre));
+      fila.appendChild(el("td", null, mayuscula(d.detalle)));
+      tabla.appendChild(fila);
+    });
+    envoltura.appendChild(tabla);
+    detalles.appendChild(envoltura);
+    return detalles;
+  }
+
+  function cajaRespuesta(r, evaluada, malos) {
+    var caja = el("div", "respuesta");
+    if (evaluada) { caja.appendChild(veredicto(evaluada)); }
+    if (r.pedido_completo && r.pedido_completo !== r.pedido) {
+      var completo = el("p", "pedido-completo", "Pedido completo que se interpretó: ");
+      completo.appendChild(el("b", null, r.pedido_completo));
+      caja.appendChild(completo);
+    }
+    caja.appendChild(bloqueEntendi(r, malos || []));
+    if (r.accion === "recomendar") {
+      caja.appendChild(bloqueColador(r));
+      if (r.opciones.length) {
+        var bloque = el("div", "bloque");
+        bloque.appendChild(el("p", "etiqueta", r.situacion === "fuera_de_presupuesto" ? "Ninguna cabe en el presupuesto: estas son las más cercanas" : "Las 3 que muestra"));
+        var lista = el("div", "opciones");
+        r.opciones.forEach(function (o) { lista.appendChild(tarjeta(o, r)); });
+        bloque.appendChild(lista);
+        caja.appendChild(bloque);
+      }
+    }
+    var mensaje = el("div", "bloque");
+    mensaje.appendChild(el("p", "etiqueta", "Lo que le responde a la persona"));
+    mensaje.appendChild(el("p", "mensaje", r.mensaje));
+    caja.appendChild(mensaje);
+    if (r.traza && r.traza.length) { caja.appendChild(bloqueTraza(r)); }
+    if (r.accion === "recomendar" && r.descartes.length) { caja.appendChild(tablaDescartes(r)); }
+    return caja;
+  }
+
+  function cajaCompacta(r) {
+    var caja = el("div", "respuesta");
+    var mensaje = el("div", "bloque");
+    mensaje.appendChild(el("p", "etiqueta", "Lo que le responde a la persona"));
+    mensaje.appendChild(el("p", "mensaje", r.mensaje));
+    caja.appendChild(mensaje);
+    if (r.opciones.length) {
+      var resumen = el("div", "resumen-turno");
+      resumen.appendChild(el("p", "etiqueta", "Las opciones que muestra"));
+      var lista = el("ol");
+      r.opciones.forEach(function (o) { lista.appendChild(el("li", null, o.nombre + ": " + plata(o.total))); });
+      resumen.appendChild(lista);
+      caja.appendChild(resumen);
+    }
+    if (r.traza && r.traza.length) {
+      var detalles = el("details");
+      detalles.appendChild(el("summary", null, "Ver qué hizo cada agente"));
+      detalles.appendChild(bloqueTraza(r));
+      caja.appendChild(detalles);
+    }
+    return caja;
+  }
+
+  function pintarChat() {
+    var r = indice[clave(estado.modo, estado.conjunto, estado.n)];
+    var chat = document.getElementById("chat");
+    chat.textContent = "";
+    if (!r) { chat.appendChild(el("p", "cargando", "No hay respuesta grabada para este caso en esta versión.")); return; }
+    var malos = (r.acierto.campos_fallados || "").split(", ");
+    if (r.turnos) {
+      chat.appendChild(el("p", "tenue chico", "Conversación " + r.n + ". Qué prueba: " + r.que_prueba.charAt(0).toLowerCase() + r.que_prueba.slice(1) + "."));
+      r.turnos.forEach(function (t, i) {
+        var ultimo = i === r.turnos.length - 1;
+        chat.appendChild(el("p", "turno", "Mensaje " + (i + 1)));
+        chat.appendChild(el("div", "burbuja-persona", t.pedido));
+        if (!ultimo) {
+          var esperada = r.acciones_esperadas[i];
+          chat.appendChild(el("p", "tenue chico", "Acción esperada: " + ACCIONES[esperada] + ". Hizo: " + ACCIONES[t.accion] + "."));
+        }
+        chat.appendChild(ultimo ? cajaRespuesta(t, r, malos) : cajaCompacta(t));
+      });
+      return;
+    }
+    chat.appendChild(el("div", "burbuja-persona", r.pedido));
+    if (estado.conjunto === "variantes" && r.que_cambia) { chat.appendChild(el("p", "nota-variante", "Qué cambia frente al pedido " + r.n + ": " + r.que_cambia.charAt(0).toLowerCase() + r.que_cambia.slice(1) + ".")); }
+    chat.appendChild(cajaRespuesta(r, r, malos));
+    chat.appendChild(el("p", "tenue chico", "Tipo de pedido: " + r.tipo + ". Trampa que debía evitar: " + r.trampa.charAt(0).toLowerCase() + r.trampa.slice(1) + "."));
+  }
+
+  function pintarResultados() {
+    var contenedor = document.getElementById("tablas-resultados");
+    contenedor.textContent = "";
+    var modos = ["sin IA", "v1", "v2"];
+    var conjuntos = [["pedidos", "Los 30 pedidos"], ["variantes", "Los mismos pedidos, con otras palabras"], ["conversaciones", "Conversaciones (10, de dos mensajes)"]];
+    conjuntos.forEach(function (c) {
+      var filas = [
+        [c[0] === "conversaciones" ? "Acción correcta en los dos mensajes" : "Hizo lo que debía", c[0] === "conversaciones" ? "acciones_ok_en_todos_los_turnos" : "accion_correcta", "pedidos"],
+        ["Entendió el pedido sin errores", "interpretacion_perfecta", "recomendables"],
+        ["Mejor opción en el primer puesto", "top1", "recomendables"],
+        ["Mejor opción entre las 3", "top3", "recomendables"],
+        ["Errores graves", "graves", null],
+        ["Recomendó cuando debía preguntar o aclarar", "recomendo_sin_deber", "debian_preguntar_o_aclarar"]
+      ];
+      var seccion = el("div", "subtabla");
+      seccion.appendChild(el("h3", null, c[1]));
+      var envoltura = el("div", "tabla-envoltura");
+      var tabla = el("table");
+      var cabeza = el("tr");
+      cabeza.appendChild(el("th", null, "Métrica"));
+      modos.forEach(function (m) { cabeza.appendChild(el("th", "cifra", NOMBRE_MODO[m])); });
+      tabla.appendChild(cabeza);
+      filas.forEach(function (f) {
+        var fila = el("tr");
+        fila.appendChild(el("td", null, f[0]));
+        modos.forEach(function (m) {
+          var res = datos.resumenes[m] && datos.resumenes[m][c[0]];
+          var texto = res ? (f[2] ? res[f[1]] + " de " + res[f[2]] : String(res[f[1]])) : "Pendiente";
+          fila.appendChild(el("td", "cifra" + (res ? "" : " tenue"), texto));
+        });
+        tabla.appendChild(fila);
+      });
+      envoltura.appendChild(tabla);
+      seccion.appendChild(envoltura);
+      contenedor.appendChild(seccion);
+    });
+  }
+
+  function pintar() { pintarControles(); pintarChat(); escribirHash(); }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b || b.disabled || !datos) { return; }
+    if (b.dataset.conjunto) {
+      if (b.dataset.conjunto !== estado.conjunto) { estado.n = b.dataset.conjunto === "conversaciones" ? "C1" : 1; }
+      estado.conjunto = b.dataset.conjunto;
+    }
+    else if (b.dataset.modo) { estado.modo = b.dataset.modo; }
+    else if (b.dataset.n) { estado.n = estado.conjunto === "conversaciones" ? b.dataset.n : parseInt(b.dataset.n, 10); }
+    else { return; }
+    pintar();
+  });
+  window.addEventListener("hashchange", function () { if (datos) { leerHash(); pintar(); } });
+
+  fetch("datos_demo.json").then(function (r) {
+    if (!r.ok) { throw new Error("HTTP " + r.status); }
+    return r.json();
+  }).then(function (d) {
+    datos = d;
+    d.respuestas.forEach(function (r) { indice[clave(r.modo, r.conjunto, r.n)] = r; });
+    if (hayModo("v2")) { estado.modo = "v2"; } else if (hayModo("v1")) { estado.modo = "v1"; }
+    leerHash();
+    pintar();
+    pintarResultados();
+  }).catch(function (error) {
+    document.getElementById("chat").textContent = "";
+    document.getElementById("chat").appendChild(el("p", "cargando", "No pude cargar datos_demo.json (" + error.message + "). Abre la demo desde su enlace publicado o desde un servidor, no como archivo suelto."));
+  });
+})();
+</script>
+</body>
+</html>

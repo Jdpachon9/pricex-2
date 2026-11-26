@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cómo construyo productos con IA</title>
+<meta name="description" content="Cómo se construyó PriceX 2.0 con IA, vuelta por vuelta: qué planteé y decidí yo, qué hizo la IA y cómo se midió, sobre seis años de experiencia con PriceX y Tecompro.co.">
+<meta property="og:title" content="Cómo construyo productos con IA">
+<meta property="og:description" content="La IA construyó PriceX 2.0 en seis días. Saber qué construir me tomó seis años. Juan David Pachón Moya.">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#F7F7F2">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F4C5C'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='28' font-weight='700' text-anchor='middle' fill='%23ffffff'%3EJP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+/* VOICE: primera persona, sobria, de ficha de producto: el hallazgo es el título.
+   IDEA: una bitácora de obra: un calendario de días y el registro de cada vuelta.
+   PICTURE: un cuadro por día: seis años en azul frente a seis días en naranja.
+   COLOUR and TYPE: el papel, la tinta y el verde azulado del caso PriceX–Tecompro.co; Inter.
+   LAYOUT: columna de 1120 px, un solo panel oscuro y la bitácora de arriba hacia abajo. */
+:root {
+  --bg: #F7F7F2;
+  --surface: #FFFFFF;
+  --ink: #1E2B30;
+  --teal: #0F4C5C;
+  --muted: #5C6B73;
+  --line: #DADDD6;
+  --ai-bg: #ECEEE8;
+  --track: #E3E6DF;
+  --px: #7A1FE0;
+  --tc: #1A44A8;
+  --night: #16272D;
+  --night-line: rgba(255, 255, 255, 0.14);
+  --on-night: #E6ECEE;
+  --on-night-muted: #A7B6BC;
+  --on-night-strong: #FFFFFF;
+  --years: #338CED;
+  --days: #E76624;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p, ul, ol, figure, blockquote { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: clamp(16px, 4vw, 40px); }
+
+/* Barra superior, igual a la del caso PriceX–Tecompro.co */
+.top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
+.top__name { font-weight: 700; color: var(--teal); text-decoration: none; letter-spacing: -0.01em; }
+.top__links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px clamp(14px, 2.4vw, 28px); font-size: 0.9375rem; }
+.top__links a { text-decoration: none; color: var(--muted); }
+.top__links a:hover { color: var(--ink); }
+.top__links .top__ext { color: var(--teal); font-weight: 600; }
+
+/* Portada */
+.hero { padding-block: clamp(36px, 6vw, 72px) clamp(40px, 6vw, 72px); }
+.hero h1 { max-width: 20ch; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.05; letter-spacing: -0.035em; font-weight: 800; color: var(--teal); }
+.hero__lead { margin-top: 20px; max-width: 62ch; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.55; }
+.hero__lead a { color: var(--teal); font-weight: 600; }
+
+/* El calendario de días */
+.days { margin-top: clamp(28px, 4vw, 44px); padding: clamp(20px, 4vw, 44px); border-radius: 20px; background: var(--night); color: var(--on-night); display: grid; gap: 14px; }
+.days__label { display: flex; align-items: center; gap: 10px; font-size: 0.9375rem; color: var(--on-night-muted); }
+.days__label strong { color: var(--on-night-strong); font-weight: 600; }
+.sw { flex: none; width: 10px; height: 10px; border-radius: 2px; background: var(--years); }
+.grid { display: flex; flex-wrap: wrap; gap: 4px; }
+.grid i { display: block; width: 8px; height: 8px; border-radius: 2px; background: var(--years); }
+.days__new { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 4px; }
+.days__new .grid i { background: var(--days); }
+.days__new p { font-size: 0.9375rem; color: var(--on-night-strong); font-weight: 600; }
+.days figcaption { padding-top: 16px; border-top: 1px solid var(--night-line); max-width: 74ch; font-size: 0.9375rem; color: var(--on-night-muted); }
+.days figcaption strong { color: var(--on-night-strong); font-weight: 600; }
+
+/* Secciones */
+.band { padding-block: clamp(48px, 7vw, 88px); border-top: 1px solid var(--line); }
+.band h2 { font-size: clamp(1.625rem, 3vw, 2.25rem); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; color: var(--teal); }
+.intro { margin-top: 14px; max-width: 66ch; color: var(--muted); }
+
+/* La bitácora: una línea de tiempo de arriba hacia abajo */
+.turns { list-style: none; margin: 40px 0 0; padding: 0; }
+.turn { position: relative; padding: 0 0 44px 40px; }
+.turn::before { content: ""; position: absolute; left: 6px; top: 12px; bottom: 0; width: 2px; background: var(--line); }
+.turn:last-child { padding-bottom: 0; }
+.turn:last-child::before { display: none; }
+.turn::after { content: ""; position: absolute; left: 0; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px var(--bg); }
+.turn__date { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+.turn h3 { margin-top: 2px; font-size: 1.25rem; line-height: 1.3; font-weight: 700; letter-spacing: -0.015em; }
+.turn__body { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); align-items: start; }
+.cell { padding: 18px 20px; border-radius: 12px; display: grid; gap: 8px; align-content: start; }
+.cell--me { background: var(--surface); border: 1px solid var(--line); }
+.cell--ai { background: var(--ai-bg); }
+.cell__who { font-size: 0.875rem; font-weight: 700; }
+.cell--me .cell__who { color: var(--teal); }
+.cell--ai .cell__who { color: var(--muted); }
+.cell blockquote { font-weight: 500; }
+.cell ul { padding-left: 1.1em; display: grid; gap: 6px; }
+.arrow { align-self: start; justify-self: center; width: 20px; height: 20px; margin-top: 46px; color: var(--muted); }
+.turn__result { margin-top: 16px; max-width: 76ch; }
+.turn__result strong { color: var(--teal); }
+.meter { margin-top: 18px; max-width: 640px; display: grid; gap: 12px; }
+.meter__cap { font-size: 0.875rem; color: var(--muted); }
+.meter__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: baseline; }
+.meter__row span { font-size: 0.9375rem; }
+.meter__row b { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 700; }
+.meter__track { grid-column: 1 / -1; height: 10px; border-radius: 0 5px 5px 0; background: var(--track); }
+.meter__fill { height: 100%; border-radius: 0 5px 5px 0; background: var(--teal); }
+
+/* Lo que trajo la experiencia */
+.lessons { list-style: none; margin: 32px 0 0; padding: 0; }
+.lesson { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 10px clamp(24px, 4vw, 56px); padding-block: 26px; border-top: 1px solid var(--line); }
+.lesson:last-child { border-bottom: 1px solid var(--line); }
+.lesson__from { font-size: 0.875rem; font-weight: 700; }
+.from-px .lesson__from { color: var(--px); }
+.from-tc .lesson__from { color: var(--tc); }
+.lesson h3 { margin-top: 4px; font-size: 1.25rem; line-height: 1.3; font-weight: 700; letter-spacing: -0.015em; }
+.lesson__now { display: grid; gap: 6px; }
+.lesson__now span { font-size: 0.875rem; font-weight: 700; color: var(--teal); }
+
+/* Quién hizo qué */
+.roles { margin-top: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.roles > div { padding: 22px 24px; border-radius: 12px; }
+.roles h3 { margin-bottom: 12px; font-size: 1.25rem; font-weight: 700; }
+.roles ul { padding-left: 1.1em; display: grid; gap: 8px; }
+.roles__ai { background: var(--ai-bg); }
+.roles__ai h3 { color: var(--muted); }
+.roles__me { background: var(--surface); border: 1px solid var(--line); }
+.roles__me h3 { color: var(--teal); }
+.closing { margin-top: 40px; max-width: 70ch; display: grid; gap: 14px; }
+.closing p:first-child { font-size: 1.25rem; line-height: 1.5; font-weight: 600; }
+.links { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px 28px; }
+.links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--teal); font-weight: 600; }
+
+/* Pie */
+.foot { border-top: 1px solid var(--line); padding-block: 32px 48px; font-size: 0.9375rem; color: var(--muted); }
+.foot .wrap { display: grid; gap: 10px; }
+.foot__name { color: var(--ink); font-weight: 700; }
+.foot a { color: var(--teal); font-weight: 600; }
+.foot__note { max-width: 84ch; font-size: 0.8125rem; }
+
+@media (max-width: 760px) {
+  .turn__body { grid-template-columns: minmax(0, 1fr); }
+  .arrow { transform: rotate(90deg); margin: 6px auto; }
+  .lesson, .roles { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 680px) {
+  .top__links .hide-sm { display: none; }
+}
+@media (max-width: 560px) {
+  body { font-size: 1rem; }
+  .turn { padding-left: 30px; }
+  .grid { gap: 2px; }
+  .grid i { width: 4px; height: 4px; border-radius: 1px; }
+  .days__new .grid { gap: 3px; }
+  .days__new .grid i { width: 8px; height: 8px; border-radius: 2px; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="top__name" href="#inicio">Juan David Pachón Moya</a>
+    <nav class="top__links" aria-label="Secciones">
+      <a class="hide-sm" href="#bitacora">La bitácora</a>
+      <a class="hide-sm" href="#experiencia">La experiencia</a>
+      <a class="hide-sm" href="#roles">Quién hizo qué</a>
+      <a class="top__ext" href="https://www.linkedin.com/in/juan-david-pachon-moya-00554417b/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="wrap">
+      <h1>La IA construyó PriceX 2.0 en seis días. Saber qué construir me tomó seis años.</h1>
+      <p class="hero__lead">Entre 2018 y 2024 llevé al mercado dos productos digitales que empezaron en un lienzo en blanco. PriceX lo cerré cuando cerrarlo era más rentable que seguir; con lo que se pudo rescatar nació Tecompro.co, que, con dificultades, fue mi fuente de ingresos durante años. En noviembre de 2026 volví al problema de PriceX, esta vez con IA. Aquí cuento cómo se hizo: qué planteé y decidí yo, qué construyó la IA y cómo se midió. <a href="https://jdpachon9.github.io/pricex-tecompro/">La historia de PriceX y Tecompro.co, con video</a>.</p>
+
+      <figure class="days" aria-labelledby="days-cap">
+        <p class="days__label"><span class="sw" aria-hidden="true"></span><span><strong>Seis años de PriceX y Tecompro.co</strong>, 2018 a 2024: unos 2.190 días</span></p>
+        <div class="grid" id="years" role="img" aria-label="2.190 cuadros azules, uno por cada día entre 2018 y 2024" title="Un día de PriceX o Tecompro.co, entre 2018 y 2024"></div>
+        <div class="days__new">
+          <div class="grid" id="new" role="img" aria-label="6 cuadros naranjas, uno por cada día de PriceX 2.0"></div>
+          <p>Seis días de PriceX 2.0, del 21 al 26 de noviembre de 2026</p>
+        </div>
+        <figcaption id="days-cap">Cada cuadro es un día. En los seis años lancé dos productos, conseguí clientes, negocié con una de las cadenas más grandes del país y cerré lo que no daba. En los seis días, PriceX 2.0 pasó de una idea a un prototipo con <strong>seis agentes de IA, tres exámenes con 70 casos de respuesta conocida y un tablero de negocio</strong>.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="band" id="bitacora" aria-labelledby="log-title">
+    <div class="wrap">
+      <h2 id="log-title">Cómo se construyó, vuelta por vuelta</h2>
+      <p class="intro">Cada vuelta tuvo el mismo orden: yo planteo, la IA construye, yo evalúo y planteo la siguiente variable. Las fechas son de noviembre de 2026.</p>
+
+      <ol class="turns">
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-21">21 de noviembre</time></p>
+          <h3>La idea</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Un asistente con una sola ventana de chat: le pido «un Samsung S26 de 256», compara precios y compra. Decidí hacerlo sobre Mercado Libre, como producto interno para un marketplace que no exigiera capital, y no como otro emprendimiento. PriceX me enseñó lo que cuesta depender de los datos de otro, y Tecompro, lo que cuesta crecer sin utilidad.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Una hoja para definir, antes de construir, qué le van a pedir al asistente y qué cuenta como la mejor opción, con una propuesta de criterio para que yo la cambiara si no estaba de acuerdo.</p>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Quedó la primera regla:</strong> qué cuenta como la mejor opción se define antes de construir, porque es una decisión de producto. Por ejemplo, si cambia el modelo o la capacidad, la publicación queda fuera; el color solo cuenta si la persona lo pidió.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-22">22 de noviembre</time></p>
+          <h3>Medir antes de creerle a la IA</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Que la IA simulara los pedidos y los datos, propusiera el criterio y lo construyera hasta donde pudiera, con una guía de estudio para mí al final. La parte técnica es justo la que hoy hace la IA; la mía es decidir qué se construye y cómo se sabe si sirve.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Un catálogo simulado de 205 publicaciones con la forma de la API de Mercado Libre, con trampas como fundas que nombran el modelo o instrucciones escondidas para engañar al asistente. Una versión sin IA, solo con patrones de texto, congelada para comparar. Y la versión 1, con el principio que guía todo el proyecto: la IA entiende el pedido, reglas fijas eligen y la persona decide. El asistente no compra: muestra las tres mejores opciones con el porqué, y el código revisa cada cifra del mensaje.</p>
+            </div>
+          </div>
+          <div class="meter" role="group" aria-labelledby="meter-cap">
+            <p class="meter__cap" id="meter-cap">Versión sin IA: pedidos con la mejor opción en el primer puesto</p>
+            <div class="meter__row" title="25 de 25 pedidos">
+              <span>Los pedidos con los que se escribió</span><b>25 de 25</b>
+              <div class="meter__track"><div class="meter__fill" style="width:100%"></div></div>
+            </div>
+            <div class="meter__row" title="13 de 25 pedidos">
+              <span>Las mismas necesidades, dichas de otra forma</span><b>13 de 25</b>
+              <div class="meter__track"><div class="meter__fill" style="width:52%"></div></div>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Lo que mostró:</strong> para no calificarla con un examen que ya conocía, se escribieron 30 variantes después de congelarla, y con ellas se cayó a 13 de 25, con 4 errores graves, como recomendar un televisor de 50 pulgadas a quien pidió uno de 55. Los errores salieron de entender mal, no de elegir mal: con el pedido bien entendido, las reglas aciertan 25 de 25. La IA tiene que ganarse su costo entendiendo, no eligiendo.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-24">24 de noviembre</time></p>
+          <h3>Un equipo de agentes</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Que el siguiente paso fuera un equipo de agentes y no un solo agente, con una tarea específica para cada uno. Y de una vez: me gusta ir con todo desde el comienzo.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Seis agentes y un director escrito en código, no en IA. A los dos de la versión 1 se sumaron cuatro, y cada uno responde a una falla que la medición dejó a la vista:</p>
+              <ul>
+                <li>el coordinador entiende qué cambió en la conversación: sin IA, después de «¿y en azul?» recomendó el negro;</li>
+                <li>el revisor relee el pedido y solo corrige un dato si lo respalda una cita textual de lo que escribió la persona;</li>
+                <li>el buscador prueba otras palabras cuando la búsqueda trae poco: «celular» no traía nada, y había 6 que cumplían;</li>
+                <li>el lector de atributos lee el título cuando a la ficha le falta un dato: quedaba fuera una opción $50.000 más barata.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="turn__result"><strong>La baranda:</strong> ningún agente decide. Proponen, y el código acepta solo lo que puede comprobar. El equipo cuesta unos $7 por mensaje, 40 % más que un solo agente.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-26">26 de noviembre</time></p>
+          <h3>Conclusiones, no solo un prototipo</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <blockquote>«Ese proyecto funcional, pero sin unas conclusiones interesantes, un reclutador fuerte lo puede interpretar como: felicidades, escribiste un buen prompt, ¿y lo demás?»</blockquote>
+              <p>Pedí un tablero que se mueva con cada interacción de la página y, después, inteligencia de negocios que le dé criterio al proyecto.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Un tablero al lado de la conversación que se actualiza con cada mensaje y responde cinco preguntas de negocio: dónde se pierde el pedido, por qué no sirven las publicaciones, qué piden y no encuentran, qué hizo cada agente y cuánto cuesta frente a lo que deja una venta. No guarda lo que escribe la persona, y los datos salen para Excel o Power BI.</p>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Lo que deja ver:</strong> con una comisión del 4 % sobre una compra de $1.000.000, una venta paga más de 5.000 mensajes. El costo de la IA no es el problema; conseguir usuarios sí. Por eso PriceX 2.0 tiene más sentido dentro de un marketplace, donde los usuarios ya están, que como aplicación aparte.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-26">26 de noviembre</time></p>
+          <h3>Esta página y lo que sigue</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Dejar por escrito el proceso, para que se vea qué hace la IA y qué hago yo.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Esta página, con lo decidido en cada vuelta.</p>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Lo que sigue:</strong> correr las versiones 1 y 2 con Gemini en los tres exámenes, publicar la página en vivo y escribir un memorando de una página con el uso real: qué medí, qué encontré y qué cambié. La corrida dirá si cada agente se gana su costo.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="experiencia" aria-labelledby="exp-title">
+    <div class="wrap">
+      <h2 id="exp-title">Lo que seis años le pusieron a PriceX 2.0</h2>
+      <p class="intro">Tres lecciones de PriceX y Tecompro.co son hoy reglas de diseño.</p>
+      <ul class="lessons">
+        <li class="lesson from-px">
+          <div>
+            <p class="lesson__from">De PriceX</p>
+            <h3>Validar el modelo con quien paga y controla los datos, antes de construir.</h3>
+          </div>
+          <div class="lesson__now">
+            <span>En PriceX 2.0</span>
+            <p>Está pensado para vivir dentro del marketplace dueño del catálogo, y su lanzamiento empieza por validar con ese cliente: un examen con 500 búsquedas reales, un modo sombra en el que responde sin que el usuario lo vea y, solo después, una prueba A/B con el 5 % de las búsquedas de celulares.</p>
+          </div>
+        </li>
+        <li class="lesson from-px">
+          <div>
+            <p class="lesson__from">De PriceX</p>
+            <h3>Mirar el peor caso, no solo el margen.</h3>
+          </div>
+          <div class="lesson__now">
+            <span>En PriceX 2.0</span>
+            <p>En 2018, una caída de 10 minutos podía costarnos $10.000.000 frente a una comisión de $15.000. Aquí ningún agente puede inventar un precio ni comprar, y la página en vivo tiene un tope de mensajes por día: el peor día cuesta unos $2.000 de IA.</p>
+          </div>
+        </li>
+        <li class="lesson from-tc">
+          <div>
+            <p class="lesson__from">De Tecompro.co</p>
+            <h3>Crecer sin utilidad es coleccionar métricas de vanidad.</h3>
+          </div>
+          <div class="lesson__now">
+            <span>En PriceX 2.0</span>
+            <p>La métrica principal del lanzamiento es compras por búsqueda, no mensajes ni visitas, y el tablero mide desde el primer mensaje cuánto cuesta atender frente a lo que deja una venta.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="roles" aria-labelledby="roles-title">
+    <div class="wrap">
+      <h2 id="roles-title">Qué hizo la IA y qué hice yo</h2>
+      <div class="roles">
+        <div class="roles__ai">
+          <h3>La IA</h3>
+          <ul>
+            <li>Escribió casi todo el código y las pruebas automáticas.</li>
+            <li>Simuló el catálogo, los pedidos, las variantes y las conversaciones.</li>
+            <li>Propuso la arquitectura de los agentes, sus barandas y la forma de medirlos.</li>
+            <li>Redactó la documentación y una guía de estudio para que yo pueda explicar cada decisión.</li>
+          </ul>
+        </div>
+        <div class="roles__me">
+          <h3>Yo</h3>
+          <ul>
+            <li>Elegí el problema y el enfoque: un producto interno para un marketplace, que no exige capital.</li>
+            <li>Pedí cada salto: el equipo de agentes, el tablero que se mueve con el uso y las conclusiones de negocio.</li>
+            <li>Evalué cada entrega y decidí qué seguía.</li>
+            <li>Ordené el proyecto para que se pueda leer, auditar y defender.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="closing">
+        <p>La IA no decide sola qué vale la pena construir, cómo se mide ni cuándo cambiar de rumbo. Ese es mi trabajo.</p>
+        <p>Es lo que llevo a un equipo: entender un modelo de negocio y su peor caso, encontrar dónde falla un producto midiendo contra una versión sin IA, y diseñar y lanzar desde cero. Con IA lo hago en días y a bajo costo: PriceX 2.0 se publica sin pagar servidores, con GitHub Pages, Streamlit Community Cloud y la capa gratuita de Gemini.</p>
+      </div>
+      <div class="links">
+        <a href="https://github.com/Jdpachon9/pricex-2">Código y ficha del producto</a>
+        <a href="https://jdpachon9.github.io/pricex-2/demo/">Demo con respuestas grabadas</a>
+        <a href="https://jdpachon9.github.io/pricex-tecompro/">PriceX y Tecompro.co, con video</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><span class="foot__name">Juan David Pachón Moya</span>. Product Manager: productos digitales, datos e IA.</p>
+    <p><a href="https://www.linkedin.com/in/juan-david-pachon-moya-00554417b/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+    <p class="foot__note">PriceX 2.0 usa un catálogo simulado con la forma de la API de Mercado Libre y no está afiliado a Mercado Libre. Los costos son estimados con los precios de Gemini 3.5 Flash-Lite de noviembre de 2026, y las corridas con Gemini de las versiones 1 y 2 están pendientes. Los días de PriceX y Tecompro.co son aproximados.</p>
+  </div>
+</footer>
+
+<script>
+{
+  const fill = (id, n, titles) => {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.innerHTML = Array.from({ length: n }, (_, i) => titles ? '<i title="' + titles[i] + '"></i>' : '<i></i>').join('');
+  };
+  fill('years', 2190);
+  fill('new', 6, ['21', '22', '23', '24', '25', '26'].map(d => d + ' de noviembre de 2026'));
+}
+</script>
+</body>
+</html>

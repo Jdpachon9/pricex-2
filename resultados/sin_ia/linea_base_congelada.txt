@@ -1,0 +1,8 @@
+Línea base congelada
+
+Archivo: pricex/linea_base.py
+SHA-256: 85d9047b2a91452915ff9564e7ca9dff738aac33e57d578d420db066d6f88861
+Congelada: 22 de noviembre de 2026, antes de escribir datos/variantes.csv.
+
+Resultado con los 30 pedidos de diseño (los mismos que se usaron para escribirla): 30 de 30 acciones correctas y 25 de 25 mejores opciones. Es un resultado optimista por construcción.
+Si este archivo cambia, la huella cambia y la comparación con las variantes deja de ser justa.

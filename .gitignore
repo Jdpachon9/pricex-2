@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+resultados_gemini.zip
+.ipynb_checkpoints/
+.env
+.streamlit/secrets.toml

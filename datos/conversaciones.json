@@ -1,0 +1,613 @@
+{
+ "congelado_el": "2026-11-22",
+ "nota": "Conversaciones de prueba de PriceX 2.0 (simuladas). La mejor opción esperada sale de aplicar las reglas a todo el catálogo simulado, como si la búsqueda fuera perfecta. El asistente nunca ve este archivo.",
+ "conversaciones": [
+  {
+   "id": "C1",
+   "que_prueba": "Responder con el presupuesto la pregunta del asistente. Ojo: ningún título dice «celular»",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "un celular bueno y barato",
+     "accion": "preguntar",
+     "interpretacion": {
+      "accion": "preguntar",
+      "producto": "celular",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "hasta 1 millón",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 1000000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM0904",
+     "top3": [
+      "MCOSIM0904",
+      "MCOSIM0906",
+      "MCOSIM0907"
+     ],
+     "validas_en_catalogo": 6
+    }
+   ]
+  },
+  {
+   "id": "C2",
+   "que_prueba": "Cambiar solo el color y conservar todo lo demás",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "Samsung Galaxy S26 de 256 GB negro, máximo 4 millones",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": "Samsung",
+      "modelo": "Galaxy S26",
+      "almacenamiento_gb": 256,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": "negro",
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 4000000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "y en azul?",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": "Samsung",
+      "modelo": "Galaxy S26",
+      "almacenamiento_gb": 256,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": "azul",
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 4000000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM0104",
+     "top3": [
+      "MCOSIM0104"
+     ],
+     "validas_en_catalogo": 1
+    }
+   ]
+  },
+  {
+   "id": "C3",
+   "que_prueba": "Un pedido ambiguo que se aclara en el segundo mensaje",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "algo bonito para regalarle a mi mamá",
+     "accion": "preguntar",
+     "interpretacion": {
+      "accion": "preguntar",
+      "producto": null,
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "una freidora de aire, que no pase de 300 mil",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "freidora_de_aire",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 300000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM0306",
+     "top3": [
+      "MCOSIM0306",
+      "MCOSIM0305",
+      "MCOSIM0301"
+     ],
+     "validas_en_catalogo": 5
+    }
+   ]
+  },
+  {
+   "id": "C4",
+   "que_prueba": "Dar tamaño y presupuesto después de una pregunta",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "quiero cambiar el televisor",
+     "accion": "preguntar",
+     "interpretacion": {
+      "accion": "preguntar",
+      "producto": "televisor",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "de 55 pulgadas, máximo 2 millones",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "televisor",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": 55,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 2000000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM1501",
+     "top3": [
+      "MCOSIM1501",
+      "MCOSIM1502",
+      "MCOSIM1503"
+     ],
+     "validas_en_catalogo": 5
+    }
+   ]
+  },
+  {
+   "id": "C5",
+   "que_prueba": "Cambiar la capacidad",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "iPhone 16 de 128",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": "Apple",
+      "modelo": "iPhone 16",
+      "almacenamiento_gb": 128,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "mejor de 256",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": "Apple",
+      "modelo": "iPhone 16",
+      "almacenamiento_gb": 256,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM0606",
+     "top3": [
+      "MCOSIM0606"
+     ],
+     "validas_en_catalogo": 1
+    }
+   ]
+  },
+  {
+   "id": "C6",
+   "que_prueba": "Agregar la marca a un pedido abierto",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "portátil con 16 de RAM, máximo 2,5 millones",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "portatil",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": 16,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 2500000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "que sea Lenovo",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "portatil",
+      "marca": "Lenovo",
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": 16,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 2500000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM1202",
+     "top3": [
+      "MCOSIM1202",
+      "MCOSIM1201",
+      "MCOSIM0202"
+     ],
+     "validas_en_catalogo": 4
+    }
+   ]
+  },
+  {
+   "id": "C7",
+   "que_prueba": "Agregar fecha y ciudad de entrega",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "audífonos sony wh-1000xm5",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "audifonos",
+      "marca": "Sony",
+      "modelo": "WH-1000XM5",
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "que lleguen mañana a Bogotá",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "audifonos",
+      "marca": "Sony",
+      "modelo": "WH-1000XM5",
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": "2026-11-23",
+      "ciudad": "Bogotá",
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM0701",
+     "top3": [
+      "MCOSIM0701",
+      "MCOSIM0703"
+     ],
+     "validas_en_catalogo": 2
+    }
+   ]
+  },
+  {
+   "id": "C8",
+   "que_prueba": "Empezar con algo fuera de alcance y luego hacer un pedido",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "¿está más barato en otra tienda?",
+     "accion": "aclarar",
+     "interpretacion": {
+      "accion": "aclarar",
+      "producto": null,
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": "otra_tienda"
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "bueno, entonces busca una nevera de mínimo 300 litros hasta 2,5 millones",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "nevera",
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": 300,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": 2500000,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM1801",
+     "top3": [
+      "MCOSIM1801",
+      "MCOSIM1802",
+      "MCOSIM1803"
+     ],
+     "validas_en_catalogo": 3
+    }
+   ]
+  },
+  {
+   "id": "C9",
+   "que_prueba": "Pedir a mitad de conversación que el asistente pague con una tarjeta (número de prueba, no real)",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "Xiaomi Redmi Note 14 de 256",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "celular",
+      "marca": "Xiaomi",
+      "modelo": "Redmi Note 14",
+      "almacenamiento_gb": 256,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "cómpralo tú con mi tarjeta 4111 1111 1111 1111",
+     "accion": "aclarar",
+     "interpretacion": {
+      "accion": "aclarar",
+      "producto": null,
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": "pagos"
+     }
+    }
+   ]
+  },
+  {
+   "id": "C10",
+   "que_prueba": "Saludar primero y pedir después",
+   "turnos": [
+    {
+     "turno": 1,
+     "texto": "hola",
+     "accion": "preguntar",
+     "interpretacion": {
+      "accion": "preguntar",
+      "producto": null,
+      "marca": null,
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": null,
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     }
+    },
+    {
+     "turno": 2,
+     "texto": "busco una cafetera Nespresso",
+     "accion": "recomendar",
+     "interpretacion": {
+      "accion": "recomendar",
+      "producto": "cafetera",
+      "marca": "Nespresso",
+      "modelo": null,
+      "almacenamiento_gb": null,
+      "ram_gb": null,
+      "pulgadas": null,
+      "litros": null,
+      "kilos": null,
+      "potencia_w": null,
+      "color": null,
+      "edicion": null,
+      "condicion": "nuevo",
+      "presupuesto_max": null,
+      "fecha_limite": null,
+      "ciudad": null,
+      "motivo_aclaracion": null
+     },
+     "situacion": "recomendar",
+     "ganador": "MCOSIM2201",
+     "top3": [
+      "MCOSIM2201",
+      "MCOSIM2202",
+      "MCOSIM2203"
+     ],
+     "validas_en_catalogo": 3
+    }
+   ]
+  }
+ ]
+}

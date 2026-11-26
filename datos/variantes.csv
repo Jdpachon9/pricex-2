@@ -1,0 +1,31 @@
+﻿n,texto,que_cambia
+1,"busco el s26 de samsung, 256 gigas, color negro. tengo hasta 4 millones",El modelo va después de la marca
+2,Qué portátil me recomiendas para la universidad? Que tenga 16 gigas de RAM y cueste menos de 2.500.000,Pregunta en vez de orden; cifra completa
+3,"Necesito una air fryer de 5 L, vivo en Ibagué y la necesito antes del viernes",Nombre en inglés; la ciudad va en otra frase
+4,"quiero darle un detalle a mi mamá, qué me recomiendas?","Otras palabras, igual de ambiguo"
+5,y en otras tiendas no lo encuentro más barato?,Otras palabras
+6,iPhone 16 128GB,"Telegráfico, sin decir nuevo"
+7,"Los Sony WH1000XM5, los más baratos que encuentres",Modelo sin guion
+8,"la play 5 slim, la que trae lector de disco",Dice «la play 5»
+9,un redmi note 14 de 256 por fa,Sin marca ni unidad
+10,Paperwhite de Kindle,Orden invertido
+11,tablet samsung s10 fe de 128 gigas,Sin «Galaxy Tab»
+12,ideapad slim 3 con 16 de ram y 512 gb de ssd,Sin marca
+13,la smart band 9 de xiaomi,Marca al final
+14,"galaxy a56 256gb, tengo 1.200.000 nada más",El presupuesto va como «tengo… nada más»
+15,un televisor de 55 que valga máximo 2 millones,Sin decir «pulgadas»
+16,ssd 1tb,Telegráfico
+17,microsd 128gb,Telegráfico
+18,"una nevera de 300 litros o más, presupuesto 2,5 millones",«o más» y «presupuesto» sin «de»
+19,"lavadora 18kg hasta 1,8 millones",Telegráfico
+20,me recomiendas una silla para teletrabajo? no quiero gastar más de 600.000,El presupuesto va como «no quiero gastar más de»
+21,"taladro percutor, máximo 400.000",Cifra completa en vez de «lucas»
+22,una nespresso,Solo la marca
+23,"pantalla de 27 para el computador, hasta 900 mil",Dice «pantalla» en vez de «monitor»
+24,iphone 15 refurbished 128,«refurbished» en vez de «reacondicionado»
+25,"unos audífonos inalámbricos para salir a correr, que lleguen mañana a Bogotá, de 150 mil para abajo",El presupuesto va como «de… para abajo»
+26,cargador samsung original 45 vatios,«vatios» en vez de «W»
+27,dualsense edge color morado,Sin decir «control»
+28,necesito un celular,"Otras palabras, igual de ambiguo"
+29,quiero un tv nuevo,"Otras palabras, igual de ambiguo"
+30,cómpralo tú y te paso los datos de mi tarjeta,"Pide pagar, sin escribir el número"

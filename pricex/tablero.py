@@ -7,6 +7,9 @@ Responde cinco preguntas de negocio, cada una con su lectura en una frase:
 4. ¿Qué hizo el equipo de agentes?        (propuestas usadas, sin cambios y rechazadas por el código)
 5. ¿Cuánto cuesta y cuánto vale?          (costo por pedido frente a la comisión de una venta)
 
+En las pruebas grabadas, que tienen respuesta correcta, responde además:
+6. ¿Qué tan bien elige?                   (aciertos y errores graves contra la clave, por versión y corrida)
+
 Privacidad: el registro guarda solo datos estructurados (producto, acción, motivos, tiempos, costo). Nunca guarda
 el texto que escribió la persona, y una marca que no está en el catálogo se guarda como «otra».
 """
@@ -107,24 +110,47 @@ def etiqueta_modo(respuesta):
 
 
 class RegistroDeUso:
-    """Los registros de la página en vivo: en memoria y, mientras la app esté despierta, en un archivo."""
+    """Los registros de la página en vivo. Con una hoja de Google Sheets conectada (hoja.py), cada mensaje queda
+    guardado ahí y sobrevive cuando la app se duerme; sin hoja, quedan en memoria y en un archivo mientras la app
+    esté despierta."""
 
-    def __init__(self, ruta=None, maximo=20_000):
+    def __init__(self, ruta=None, maximo=20_000, hoja=None):
         self.ruta = Path(ruta) if ruta else None
         self.maximo = maximo
+        self.hoja = hoja
+        self.problema = None
         self._eventos = []
         self._candado = threading.Lock()
-        if self.ruta and self.ruta.exists():
+        if self.hoja is not None:
+            try:
+                self._eventos = list(self.hoja.leer())[-maximo:]
+            except Exception as error:  # la página sigue: sin hoja, como antes
+                self._fallo_la_hoja("leer", error)
+        if self.hoja is None and self.ruta and self.ruta.exists():
             for linea in self.ruta.read_text(encoding="utf-8").splitlines()[-maximo:]:
                 try:
                     self._eventos.append(json.loads(linea))
                 except ValueError:
                     continue
 
+    def _fallo_la_hoja(self, que, error):
+        self.problema = f"No se pudo {que} la hoja de Google Sheets ({type(error).__name__}): los datos quedan solo " \
+                        "mientras la página esté despierta."
+        self.hoja = None
+
+    @property
+    def guarda_en_hoja(self):
+        return self.hoja is not None
+
     def agregar(self, evento):
         with self._candado:
             self._eventos.append(evento)
             del self._eventos[:-self.maximo]
+            if self.hoja is not None:
+                try:
+                    self.hoja.agregar(evento)
+                except Exception as error:
+                    self._fallo_la_hoja("escribir en", error)
             if self.ruta:
                 try:
                     with open(self.ruta, "a", encoding="utf-8") as f:
@@ -137,30 +163,63 @@ class RegistroDeUso:
             return list(self._eventos)
 
 
+def _veredicto(fila):
+    """La fila de evaluación de un caso, en datos: True, False o None cuando no aplica."""
+    def dato(clave):
+        valor = (fila or {}).get(clave)
+        return {"True": True, "False": False}.get(valor)
+    return {"accion_ok": dato("acciones_ok") if dato("acciones_ok") is not None else dato("accion_ok"),
+            "top1": dato("top1"), "grave": dato("grave"), "entendio": dato("interpretacion_ok")}
+
+
+def _evaluaciones(archivo):
+    if not archivo.exists():
+        return {}
+    with open(archivo, encoding="utf-8-sig") as f:
+        return {fila["n"]: fila for fila in csv.DictReader(f)}
+
+
+# Dónde está cada corrida grabada. La sin IA es una sola (no usa modelo); la corrida 1 quedó archivada en su carpeta.
+FUENTES_PRUEBAS = [("sin IA", None, ("resultados", "sin_ia"), ""),
+                   ("v1", 1, ("resultados", "gemini", "corrida_1"), "v1_"), ("v2", 1, ("resultados", "gemini", "corrida_1"), "v2_"),
+                   ("v1", 2, ("resultados", "gemini"), "v1_"), ("v2", 2, ("resultados", "gemini"), "v2_")]
+
+
 def eventos_de_pruebas(raiz, marcas=None):
-    """Los registros de las corridas grabadas: sin IA siempre; v1 y v2 cuando se haya corrido el cuaderno."""
+    """Los registros de las corridas grabadas, con el veredicto de cada caso contra la clave de respuestas.
+
+    En una conversación, el veredicto va en el último turno, que es donde se mide."""
     raiz = Path(raiz)
-    fuentes = [("sin IA", raiz / "resultados" / "sin_ia", ""), ("v1", raiz / "resultados" / "gemini", "v1_"),
-               ("v2", raiz / "resultados" / "gemini", "v2_")]
     eventos = []
-    for version, carpeta, prefijo in fuentes:
+    for version, corrida, partes, prefijo in FUENTES_PRUEBAS:
+        carpeta = raiz.joinpath(*partes)
         for conjunto in ("pedidos", "variantes", "conversaciones"):
             archivo = carpeta / f"respuestas_{prefijo}{conjunto}.jsonl"
             if not archivo.exists():
                 continue
+            evaluaciones = _evaluaciones(carpeta / f"evaluacion_{prefijo}{conjunto}.csv")
             for linea in archivo.read_text(encoding="utf-8").splitlines():
                 r = json.loads(linea)
-                for turno in (r["turnos"] if conjunto == "conversaciones" else [r]):
-                    evento = evento_de(turno, sesion=f"{conjunto}-{r['n']}", origen="prueba", version=version,
-                                       marcas=marcas)
-                    evento["momento"] = None
+                turnos = r["turnos"] if conjunto == "conversaciones" else [r]
+                for i, turno in enumerate(turnos, start=1):
+                    sesion = f"{conjunto}-{r['n']}" if corrida is None else f"corrida{corrida}-{conjunto}-{r['n']}"
+                    evento = evento_de(turno, sesion=sesion, origen="prueba", version=version, marcas=marcas)
+                    evento.update(momento=None, corrida=corrida, conjunto=conjunto)
+                    ultimo = i == len(turnos)
+                    evento.update(_veredicto(evaluaciones.get(str(r["n"])) if ultimo else None))
                     eventos.append(evento)
     return eventos
 
 
-def filtrar(eventos, producto=None, sesion=None, version=None):
+def corridas_de(eventos):
+    return sorted({e.get("corrida") for e in eventos if e.get("corrida")})
+
+
+def filtrar(eventos, producto=None, sesion=None, version=None, corrida=None):
+    """La versión sin IA no tiene corrida: es la misma línea base para las dos, así que el filtro de corrida la deja."""
     return [e for e in eventos if (producto is None or e["producto"] == producto)
-            and (sesion is None or e["sesion"] == sesion) and (version is None or e["version"] == version)]
+            and (sesion is None or e["sesion"] == sesion) and (version is None or e["version"] == version)
+            and (corrida is None or e.get("corrida") in (None, corrida))]
 
 
 # ---------------------------------------------------------------- los resúmenes
@@ -200,6 +259,14 @@ def resumen(eventos):
         for agente, cuenta in e["agentes"].items():
             fila = agentes.setdefault(agente, Counter())
             fila.update(cuenta)
+    evaluados = [e for e in eventos if e.get("accion_ok") is not None]
+    recomendables = [e for e in evaluados if e.get("top1") is not None]
+    calidad = None
+    if evaluados:
+        calidad = {"casos": len(evaluados), "acciones_ok": sum(bool(e["accion_ok"]) for e in evaluados),
+                   "recomendables": len(recomendables), "top1": sum(bool(e["top1"]) for e in recomendables),
+                   "entendio": sum(bool(e.get("entendio")) for e in recomendables),
+                   "graves": sum(bool(e.get("grave")) for e in recomendables)}
     con_ia = [e for e in eventos if e["consultas"]]
     costo = mediana_costo = None
     if con_ia:
@@ -219,7 +286,46 @@ def resumen(eventos):
         "consultas_por_mensaje": sum(e["consultas"] for e in con_ia) / len(con_ia) if con_ia else None,
         "titulos_leidos": sum(e["leido_del_titulo"] for e in eventos),
         "busquedas_extra": sum(e["busquedas_extra"] for e in eventos),
+        "calidad": calidad,
     }
+
+
+NOMBRE_VERSION_CORTO = {"sin IA": "Sin IA", "v1": "V1: un agente", "v2": "V2: equipo"}
+
+
+def comparar_corridas(eventos):
+    """Una fila por versión y corrida: aciertos, errores graves, costo y tiempo. Es el antes y el después."""
+    filas = []
+    for version, corrida, *_ in FUENTES_PRUEBAS:
+        grupo = [e for e in eventos if e["version"] == version and e.get("corrida") == corrida]
+        if not grupo:
+            continue
+        r = resumen(grupo)
+        c = r["calidad"] or {}
+        filas.append({"version": version, "corrida": corrida, "recomendables": c.get("recomendables", 0),
+                      "top1": c.get("top1", 0), "graves": c.get("graves", 0), "costo_usd": r["costo_promedio_usd"],
+                      "segundos": r["segundos_mediana"]})
+    return filas
+
+
+def lectura_corridas(filas):
+    """La frase del antes y el después: qué pasó con cada versión con IA de la corrida 1 a la 2."""
+    por = {(f["version"], f["corrida"]): f for f in filas}
+    partes = []
+    for version in ("v1", "v2"):
+        antes, despues = por.get((version, 1)), por.get((version, 2))
+        if not (antes and despues):
+            continue
+        texto = (f"la {version} pasó de {antes['top1']} a {despues['top1']} aciertos de {despues['recomendables']}")
+        if antes["costo_usd"] and despues["costo_usd"]:
+            cambio = round(100 * (despues["costo_usd"] - antes["costo_usd"]) / antes["costo_usd"])
+            texto += (f" y su costo por mensaje {'bajó' if cambio < 0 else 'subió'} {abs(cambio)} %"
+                      if cambio else " con el mismo costo por mensaje")
+        partes.append(texto)
+    if not partes:
+        return None
+    return ("De la corrida 1 a la 2 (después de corregir la regla de modelos, frenar las palabras nuevas del "
+            "coordinador, cambiar el buscador a marcas y apagar el revisor), " + "; ".join(partes) + ".")
 
 
 def nombre_producto(clave):
@@ -258,6 +364,14 @@ def lecturas(r):
                                               "presupuesto. Es demanda sin atender.",
         }[etapa]
     frases.append(("¿Dónde se pierde el pedido?", frase))
+    c = r.get("calidad")
+    if c and c["recomendables"]:
+        frases.append(("¿Qué tan bien elige?",
+                       f"Contra la respuesta correcta, la mejor opción quedó primera en {c['top1']} de "
+                       f"{c['recomendables']} pedidos ({porcentaje(c['top1'], c['recomendables'])} %) y entendió sin "
+                       f"errores {c['entendio']} de {c['recomendables']}. Errores graves, es decir, una primera opción "
+                       f"que incumple lo pedido: {c['graves']}. Hizo lo que debía (recomendar, preguntar o aclarar) en "
+                       f"{c['acciones_ok']} de {c['casos']} casos."))
     if r["motivos"]:
         motivo, cuantas = r["motivos"][0]
         por_cada = r["descartadas"] / r["validas"] if r["validas"] else None
@@ -296,9 +410,11 @@ def lecturas(r):
         for _, cuenta in r["agentes"]:
             totales.update(cuenta)
         propuestas = sum(totales.values())
-        revisor = dict(r["agentes"]).get("Revisor", {})
+        revisor = dict(r["agentes"]).get("Revisor")  # apagado por defecto desde la corrida 1
         frase = (f"Los agentes trabajaron {propuestas} veces y el código rechazó {totales['rechazado']} de sus "
-                 f"propuestas. El revisor cambió algo en {revisor.get('usado', 0)} de {sum(revisor.values())} pedidos")
+                 "propuestas")
+        if revisor:
+            frase += f". El revisor cambió algo en {revisor.get('usado', 0)} de {sum(revisor.values())} pedidos"
         frase += (f"; el lector rescató {r['titulos_leidos']} publicaci{'ón' if r['titulos_leidos'] == 1 else 'ones'} "
                   "leyendo su título" if r["titulos_leidos"] else "")
         frase += f" y el buscador hizo {r['busquedas_extra']} búsquedas extra." if r["busquedas_extra"] else "."
@@ -317,21 +433,75 @@ def lecturas(r):
 
 
 # ---------------------------------------------------------------- exportar para inteligencia de negocios
-COLUMNAS_CSV = ["momento", "origen", "version", "sesion", "turno", "movimiento", "accion", "situacion", "razon",
+COLUMNAS_CSV = ["momento", "origen", "version", "corrida", "conjunto", "accion_ok", "top1", "grave", "entendio",
+                "sesion", "turno", "movimiento", "accion", "situacion", "razon",
                 "producto", "marca", "presupuesto", "total_primera", "brecha", "revisadas", "validas",
                 "leido_del_titulo", "busquedas_extra", "consultas", "tokens_entrada", "tokens_salida",
                 "segundos_modelo", "costo_usd"]
 
 
+def columna_agente(agente, resultado):
+    return f"{normalizar(agente).replace(' ', '_')}_{normalizar(resultado).replace(' ', '_')}"
+
+
+def columnas():
+    """Las columnas del CSV y de la hoja de Google Sheets: los datos del mensaje, un motivo de descarte por columna
+    y una columna por agente y resultado."""
+    return (COLUMNAS_CSV + [f"descartes_{m}" for m in MOTIVOS]
+            + [columna_agente(a, r) for a in AGENTES for r in RESULTADOS])
+
+
+def fila_de(evento):
+    """Los valores de un registro, en el orden de columnas()."""
+    return ([evento.get(c) for c in COLUMNAS_CSV] + [evento["descartes"].get(m, 0) for m in MOTIVOS]
+            + [evento["agentes"].get(a, {}).get(r, 0) for a in AGENTES for r in RESULTADOS])
+
+
+# Cómo volver a leer una fila (de la hoja o del CSV) como registro: cada columna con su tipo
+ENTEROS = {"corrida", "turno", "presupuesto", "total_primera", "brecha"}
+CONTEOS = {"revisadas", "validas", "busquedas_extra", "consultas", "tokens_entrada", "tokens_salida"}
+DECIMALES = {"segundos_modelo", "costo_usd"}
+SI_NO = {"accion_ok", "top1", "grave", "entendio"}
+
+
+def _numero(valor):
+    return float(str(valor).replace(",", ".")) if not isinstance(valor, (int, float)) else valor
+
+
+def evento_de_fila(fila):
+    """El registro que guardó fila_de(), a partir de un diccionario columna -> valor. Lo vacío vuelve como None."""
+    evento = {}
+    for c in COLUMNAS_CSV:
+        v = fila.get(c)
+        vacio = v in ("", None)
+        if c in CONTEOS:
+            evento[c] = 0 if vacio else int(_numero(v))
+        elif c in DECIMALES:
+            evento[c] = 0.0 if vacio else float(_numero(v))
+        elif c in ENTEROS:
+            evento[c] = None if vacio else int(_numero(v))
+        elif c == "leido_del_titulo":
+            evento[c] = False if vacio else (v if isinstance(v, bool) else str(v).strip().upper() == "TRUE")
+        elif c in SI_NO:
+            evento[c] = None if vacio else (v if isinstance(v, bool) else str(v).strip().upper() == "TRUE")
+        else:
+            evento[c] = None if vacio else str(v)
+    evento["descartes"] = {m: int(_numero(fila[f"descartes_{m}"])) for m in MOTIVOS
+                           if fila.get(f"descartes_{m}") not in ("", None) and int(_numero(fila[f"descartes_{m}"]))}
+    evento["agentes"] = {}
+    for a in AGENTES:
+        for r in RESULTADOS:
+            v = fila.get(columna_agente(a, r))
+            if v not in ("", None) and int(_numero(v)):
+                evento["agentes"].setdefault(a, {})[r] = int(_numero(v))
+    return evento
+
+
 def a_csv(eventos):
     """Un CSV con una fila por mensaje, listo para Excel o Power BI. Los descartes y los agentes van en columnas."""
     salida = io.StringIO()
-    columnas = COLUMNAS_CSV + [f"descartes_{m}" for m in MOTIVOS] + [
-        f"{normalizar(a).replace(' ', '_')}_{normalizar(r).replace(' ', '_')}" for a in AGENTES for r in RESULTADOS]
     escritor = csv.writer(salida)
-    escritor.writerow(columnas)
+    escritor.writerow(columnas())
     for e in eventos:
-        fila = [e.get(c) for c in COLUMNAS_CSV] + [e["descartes"].get(m, 0) for m in MOTIVOS]
-        fila += [e["agentes"].get(a, {}).get(r, 0) for a in AGENTES for r in RESULTADOS]
-        escritor.writerow(fila)
+        escritor.writerow(fila_de(e))
     return salida.getvalue()

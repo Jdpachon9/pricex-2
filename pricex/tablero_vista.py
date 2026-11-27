@@ -10,8 +10,8 @@ from html import escape as _escape
 
 from .reglas import MOTIVOS
 from .respuesta import FRASES_MOTIVO
-from .tablero import AGENTES, RESULTADOS, SITUACIONES, nombre_producto
-from .texto import pesos
+from .tablero import AGENTES, NOMBRE_VERSION_CORTO, RESULTADOS, SITUACIONES, nombre_producto, usd
+from .texto import decimal, pesos
 
 AZUL = "#257de0"
 GRIS = "rgba(128,128,128,.45)"  # «Otros»: lo que se junta al final no compite con las barras con nombre
@@ -34,6 +34,7 @@ ESTILO = """<style>
 .px .px-leyenda{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;opacity:.85;margin:2px 0 12px}
 .px .px-leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .px table{border-collapse:collapse;width:100%;font-size:14px}
+.px .px-scroll{overflow-x:auto}
 .px th,.px td{text-align:left;padding:6px 8px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top}
 .px th{font-weight:600;opacity:.8}
 .px th.n{text-align:right}
@@ -148,3 +149,34 @@ def demanda(filas, maximo_filas=8):
         for f in filas[:maximo_filas])
     return bloque("<table><tr><th>Producto</th><th>Qué pasó</th><th class='n'>Pedidos</th>"
                   f"<th class='n'>Le faltó</th></tr>{cuerpo}</table>")
+
+
+def calidad(c):
+    """Los aciertos contra la respuesta correcta, cada uno sobre su total, y los errores graves dichos en palabras."""
+    filas = [fila_barra("Mejor opción en el primer puesto", c["top1"], c["recomendables"], nota=f"de {c['recomendables']}"),
+             fila_barra("Entendió el pedido sin errores", c["entendio"], c["recomendables"],
+                        nota=f"de {c['recomendables']}"),
+             fila_barra("Hizo lo que debía: recomendar, preguntar o aclarar", c["acciones_ok"], c["casos"],
+                        nota=f"de {c['casos']}")]
+    if c["graves"]:
+        grave = (f"{c['graves']} error{'es' if c['graves'] != 1 else ''} grave{'s' if c['graves'] != 1 else ''}: "
+                 "la primera opción incumplía lo pedido.")
+    else:
+        grave = "Ningún error grave: la primera opción nunca incumplió lo pedido."
+    return bloque("".join(filas) + f'<p class="px-tenue">{escape(grave)}</p>')
+
+
+def tabla_corridas(filas):
+    """El antes y el después de cada versión: aciertos, errores graves, costo y tiempo del modelo."""
+    cuerpo = ""
+    for f in filas:
+        corrida = "Línea base" if f["corrida"] is None else f"Corrida {f['corrida']}"
+        costo = usd(f["costo_usd"]) if f["costo_usd"] else "Sin IA"
+        segundos = f"{decimal(f['segundos'], 1)} s" if f["segundos"] else "—"
+        cuerpo += (f"<tr><td>{escape(NOMBRE_VERSION_CORTO.get(f['version'], f['version']))}</td><td>{escape(corrida)}</td>"
+                   f"<td class='n'>{f['top1']} de {f['recomendables']}</td><td class='n'>{f['graves']}</td>"
+                   f"<td class='n'>{escape(costo)}</td><td class='n'>{escape(segundos)}</td></tr>")
+    return bloque("<div class='px-scroll'><table><tr><th>Versión</th><th>Corrida</th>"
+                  "<th class='n'>Mejor opción primero</th><th class='n'>Errores graves</th>"
+                  f"<th class='n'>Costo por mensaje</th><th class='n'>Tiempo del modelo</th></tr>{cuerpo}</table></div>")
+

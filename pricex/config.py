@@ -45,6 +45,7 @@ CIUDADES = ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Bucara
 MIN_RESULTADOS_DEL_PRODUCTO = 10  # el Buscador trabaja si la búsqueda trajo menos de esto del producto pedido...
 MAX_BUSQUEDAS_EXTRA = 2           # ...y quedaron menos de OPCIONES_A_MOSTRAR opciones. Máximo 2 búsquedas más
 MAX_PUBLICACIONES_LECTOR = 10     # el Lector lee como máximo 10 títulos por pedido
+USAR_REVISOR = False              # apagado tras la corrida 1 con Gemini: 64 consultas y ningún cambio
 
 # Caso de negocio y costos (para el tablero). Precios de Gemini 3.5 Flash-Lite en noviembre de 2026, en dólares
 # por millón de tokens; dólar a la TRM de mediados de noviembre; comisión y compra promedio son supuestos.

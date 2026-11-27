@@ -14,8 +14,8 @@ sys.path.insert(0, str(RAIZ / "pruebas"))
 from modelo_falso import ModeloColaborador  # noqa: E402
 from pricex.catalogo import CatalogoSimulado  # noqa: E402
 from pricex.multiagente import Conversacion, Equipo  # noqa: E402
-from pricex.tablero import (RegistroDeUso, a_csv, evento_de, eventos_de_pruebas, filtrar, lecturas,  # noqa: E402
-                            marcas_del_catalogo, resumen)
+from pricex.tablero import (RegistroDeUso, a_csv, comparar_corridas, evento_de, eventos_de_pruebas,  # noqa: E402
+                            filtrar, lecturas, marcas_del_catalogo, resumen)
 
 CATALOGO = CatalogoSimulado(RAIZ / "datos" / "catalogo_simulado.json")
 MARCAS = marcas_del_catalogo(CATALOGO)
@@ -76,6 +76,82 @@ class Resumen(unittest.TestCase):
         self.assertEqual(len(filas), 11)
         self.assertTrue(filas[0].startswith("momento,origen,version"))
         self.assertNotIn("Samsung Galaxy S26 de 256 GB negro", texto)
+
+
+class Corridas(unittest.TestCase):
+    """Las dos corridas reales con Gemini (resultados/gemini y resultados/gemini/corrida_1) y su calidad."""
+
+    def test_lee_las_dos_corridas_y_la_linea_base(self):
+        cuenta = {}
+        for e in PRUEBAS:
+            cuenta[(e["version"], e.get("corrida"))] = cuenta.get((e["version"], e.get("corrida")), 0) + 1
+        self.assertEqual(cuenta, {("sin IA", None): 80, ("v1", 1): 80, ("v2", 1): 80, ("v1", 2): 80, ("v2", 2): 80})
+
+    def test_la_calidad_cuadra_con_las_tablas_del_cuaderno(self):
+        esperado = {("sin IA", None): (44, 6), ("v1", 1): (55, 0), ("v2", 1): (55, 0), ("v1", 2): (58, 0),
+                    ("v2", 2): (59, 0)}  # 25 + 25 + 9 casos para recomendar
+        for (version, corrida), (top1, graves) in esperado.items():
+            c = resumen([e for e in PRUEBAS if e["version"] == version and e.get("corrida") == corrida])["calidad"]
+            self.assertEqual((c["recomendables"], c["top1"], c["graves"]), (59, top1, graves), (version, corrida))
+
+    def test_el_filtro_de_corrida_deja_la_linea_base(self):
+        self.assertEqual(len(filtrar(PRUEBAS, corrida=1)), 240)  # sin IA + v1 y v2 de la corrida 1
+        self.assertEqual(len(filtrar(PRUEBAS, version="v2", corrida=2)), 80)
+
+    def test_el_antes_y_el_despues(self):
+        filas = {(f["version"], f["corrida"]): f for f in comparar_corridas(PRUEBAS)}
+        self.assertEqual((filas[("v2", 1)]["top1"], filas[("v2", 2)]["top1"]), (55, 59))
+        self.assertLess(filas[("v2", 2)]["costo_usd"], filas[("v2", 1)]["costo_usd"])  # sin el revisor
+
+    def test_el_csv_trae_la_corrida_y_el_veredicto(self):
+        encabezado = a_csv(PRUEBAS[:1]).splitlines()[0].split(",")
+        for columna in ("corrida", "conjunto", "accion_ok", "top1", "grave", "entendio"):
+            self.assertIn(columna, encabezado)
+
+
+class HojaFalsa:
+    """Imita una pestaña de gspread: guarda las filas en memoria. No es Google Sheets: solo prueba el código."""
+
+    def __init__(self, falla=False):
+        self.filas, self.falla = [], falla
+
+    def get_all_values(self, value_render_option=None):
+        if self.falla:
+            raise ConnectionError("sin red")
+        return [list(f) for f in self.filas]
+
+    def append_row(self, valores, value_input_option=None):
+        if self.falla:
+            raise ConnectionError("sin red")
+        self.filas.append(list(valores))
+
+
+class HojaDeGoogle(unittest.TestCase):
+    def test_guarda_y_vuelve_a_leer_lo_mismo(self):
+        from pricex.hoja import HojaDeUso
+        falsa = HojaFalsa()
+        eventos = filtrar(PRUEBAS, version="v2", corrida=2)
+        registro = RegistroDeUso(hoja=HojaDeUso(falsa))
+        for e in eventos:
+            registro.agregar(e)
+        self.assertEqual(len(falsa.filas), 81)  # el encabezado y una fila por mensaje
+        self.assertNotIn(None, falsa.filas[1])  # las celdas vacías van como texto vacío
+        leidos = RegistroDeUso(hoja=HojaDeUso(falsa)).eventos()  # la app se durmió y volvió a despertar
+        antes, despues = resumen(eventos), resumen(leidos)
+        for clave in ("mensajes", "con_opciones", "descartadas", "agentes", "calidad", "busquedas_extra"):
+            self.assertEqual(antes[clave], despues[clave], clave)
+        self.assertAlmostEqual(antes["costo_promedio_usd"], despues["costo_promedio_usd"])
+
+    def test_si_la_hoja_falla_la_pagina_sigue(self):
+        from pricex.hoja import HojaDeUso
+        falsa = HojaFalsa()
+        hoja = HojaDeUso(falsa)
+        registro = RegistroDeUso(hoja=hoja)
+        falsa.falla = True
+        registro.agregar(PRUEBAS[0])
+        self.assertEqual(len(registro.eventos()), 1)
+        self.assertFalse(registro.guarda_en_hoja)
+        self.assertIn("Google Sheets", registro.problema)
 
 
 if __name__ == "__main__":

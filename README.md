@@ -2,27 +2,31 @@
 
 **Proyecto de portafolio · Catálogo simulado con la forma de la API de Mercado Libre · No afiliado a Mercado Libre**
 
-> **En corto:** le escribes en una frase lo que quieres comprar («tele de 55 que no pase de 2 palos») y el asistente te muestra las 3 mejores opciones, con el porqué. Puedes seguir conversando («¿y en azul?») sin repetir todo. Un equipo de seis agentes de IA entiende el pedido, lo revisa, busca y lee lo que falta; reglas fijas revisan cada publicación y deciden el orden; la persona compra desde el enlace. **La IA entiende, las reglas eligen y la persona decide.**
+> **En corto:** le escribes en una frase lo que quieres comprar («tele de 55 que no pase de 2 palos») y el asistente te muestra las 3 mejores opciones, con el porqué. Puedes seguir conversando («¿y en azul?») sin repetir todo. Un equipo de agentes de IA entiende el pedido, busca y lee lo que falta; reglas fijas revisan cada publicación y deciden el orden; la persona compra desde el enlace. **La IA entiende, las reglas eligen y la persona decide.**
 
-**Primeros resultados (noviembre de 2026):** con el pedido bien entendido, las reglas eligieron la opción esperada en los 25 pedidos para recomendar y dejaron fuera las 3 publicaciones con instrucciones escondidas. La versión sin IA acertó los 30 pedidos con los que se escribió, pero con 30 formas nuevas de pedir lo mismo bajó a 13 de 25 y cometió 4 errores graves. En conversaciones, pegando el mensaje anterior y el nuevo, se equivocó de forma grave en 2 de 9: recomendó el color y la capacidad que la persona acababa de cambiar. Las corridas con Gemini (un agente y el equipo) están listas para ejecutarse en el cuaderno. Detalle en la [sección 6](#6-resultados).
+**Resultados con Gemini (26 de noviembre de 2026):** en la corrida 2, el equipo de agentes puso la mejor opción en el primer puesto en 59 de 59 casos de los tres exámenes, sin errores graves. La versión sin IA logró 44 de 59, con 6 errores graves. Llegar ahí tomó dos corridas. La primera mostró que el equipo no superaba a un solo agente y costaba 15 % más, que tres fallos eran de nuestra regla de modelos y no de la IA, que el revisor no cambiaba nada y que el coordinador agregaba un color que nadie pidió. Se corrigió eso y se volvió a medir: la segunda vuelta necesitó solo 4 consultas nuevas al modelo. Detalle en la [sección 6](#6-resultados).
+
+**Pruébalo en vivo:** [pricex-2.streamlit.app](https://pricex-2.streamlit.app/). Si la página está dormida, tarda unos segundos en despertar. Sin escribir nada, la [demo](https://jdpachon9.github.io/pricex-2/demo/) muestra las respuestas grabadas caso por caso.
 
 **Cómo se hizo:** la IA escribió casi todo el código; yo planteé el problema, evalué cada entrega y decidí cada paso. La bitácora, vuelta por vuelta, y lo que seis años con PriceX y Tecompro.co le pusieron al producto están en [la página del proceso](https://jdpachon9.github.io/pricex-2/proceso/).
 
-**Estado: versiones 1 y 2 construidas; faltan las corridas con IA y publicar la página en vivo**
+**Estado: versiones 1 y 2 construidas y medidas en dos corridas con Gemini; página en vivo publicada**
 
 - [x] Ficha de producto (este documento)
 - [x] 30 pedidos de prueba, 30 variantes, 10 conversaciones, 205 publicaciones simuladas y la clave de respuestas
 - [x] Reglas de la mejor opción, con prueba automática
 - [x] Versión sin IA, congelada y medida
 - [x] Versión 1: un agente interpreta, otro paso redacta y el código verifica las cifras
-- [x] Versión 2: equipo de seis agentes con director en código, memoria de conversación y barandas verificables
+- [x] Versión 2: equipo de agentes con director en código, memoria de conversación y barandas verificables (seis construidos; el revisor quedó apagado después de medirlo)
 - [x] Un solo cuaderno que corre las tres versiones y las compara
 - [x] Demo en el navegador con las respuestas grabadas (carpeta `demo`)
 - [x] Página en vivo para conversar con el equipo (`app.py`, lista para Streamlit Community Cloud)
-- [x] Tablero en la página en vivo, que se actualiza con cada mensaje y responde cinco preguntas de negocio
+- [x] Tablero en la página en vivo: se actualiza con cada mensaje, responde cinco preguntas de negocio, mide la calidad de cada versión, compara corridas y puede guardar el uso en Google Sheets
 - [x] Página del proceso: cómo se construyó, vuelta por vuelta (carpeta `proceso`)
-- [ ] Corrida con Gemini de la versión 1 y la versión 2
-- [ ] Publicar la página en vivo
+- [x] Corrida 1 con Gemini, cambios por lo que mostró y corrida 2
+- [x] Página en vivo publicada en [pricex-2.streamlit.app](https://pricex-2.streamlit.app/)
+- [ ] Conectar la hoja de uso en Google Sheets
+- [ ] Memorando de conclusiones con el uso real
 - [ ] Video
 
 ---
@@ -84,16 +88,14 @@ flowchart TD
     A["La persona escribe"] --> B["Código: tapa tarjetas, correos y teléfonos"]
     B --> C{"¿Hay un pedido en curso?"}
     C -->|"Sí"| D["Coordinador: escribe el pedido completo"]
-    D --> E{"Código: ¿trae cifras que la persona no escribió?"}
+    D --> E{"Código: ¿trae cifras o palabras que la persona no escribió?"}
     E -->|"Sí"| F["Código: pega los dos mensajes"]
     E -->|"No"| G
     F --> G
     C -->|"No"| G["Intérprete: convierte el pedido en datos"]
     G --> H{"Código: ¿hay con qué elegir?"}
     H -->|"No"| I["Pregunta o aclara"]
-    H -->|"Sí"| J["Revisor: propone correcciones citando el pedido"]
-    J --> K["Código: acepta solo las que salen letra por letra del pedido"]
-    K --> L["Reglas: buscan, descartan y ordenan"]
+    H -->|"Sí"| L["Reglas: buscan, descartan y ordenan"]
     L --> M{"¿Menos de 3 opciones y la búsqueda trajo poco?"}
     M -->|"Sí"| N["Buscador: hasta 2 búsquedas más; las reglas revisan lo nuevo"]
     M -->|"No"| O
@@ -106,18 +108,18 @@ flowchart TD
 
 | Agente | Cuándo trabaja | Qué propone | Qué revisa el código antes de usarlo |
 |---|---|---|---|
-| Coordinador | Cuando ya hay un pedido en curso | El pedido completo en una frase | Que no traiga cifras que la persona no escribió. Si falla, pega los dos mensajes |
+| Coordinador | Cuando ya hay un pedido en curso | El pedido completo en una frase | Que no traiga cifras ni palabras que la persona no escribió. Si falla, pega los dos mensajes |
 | Intérprete | Siempre (es el de la v1) | Los datos del pedido | Producto de la lista, cifras válidas, fecha futura y reglas de acción |
-| Revisor | Cuando se va a recomendar | Correcciones a cifras, fecha, ciudad, color, edición o estado | Que cada una cite el pedido letra por letra y no cambie un dato que ya tenía respaldo |
-| Buscador | Si quedaron menos de 3 opciones y la búsqueda trajo menos de 10 publicaciones del producto | Hasta 2 búsquedas nuevas | Formato corto y sin enlaces. Las reglas revisan cada publicación nueva |
+| Revisor (apagado) | Solo si se prende `USAR_REVISOR`: en la corrida 1 hizo 64 consultas y no cambió nada | Correcciones a cifras, fecha, ciudad, color, edición o estado | Que cada una cite el pedido letra por letra y no cambie un dato que ya tenía respaldo |
+| Buscador | Si quedaron menos de 3 opciones y la búsqueda trajo menos de 10 publicaciones del producto | Hasta 2 búsquedas nuevas, con marcas y sin palabras de relleno | Formato corto y sin enlaces. Las reglas revisan cada publicación nueva |
 | Lector de atributos | Si una publicación quedó fuera solo porque su ficha no trae un dato pedido | El dato, leído del título | Que esté escrito en el título, sin condiciones («ampliable a») y sin ambigüedad. El mensaje avisa cuando un dato salió del título |
 | Redactor | Cuando hay opciones para mostrar (es el de la v1) | El mensaje para la persona | Cada cifra contra los datos. Si falla, sale la plantilla |
 
 **Por qué un director en código y no un agente que decide todo.** Un agente que decide por su cuenta a quién llamar es más flexible, pero cada respuesta puede tomar un camino distinto, y eso es difícil de auditar y de medir. En una recomendación de compra importa más poder explicar cada paso que la flexibilidad. Aquí cada agente tiene una tarea pequeña, sus propuestas se pueden comprobar con el texto, y el camino es siempre el mismo: si un agente se equivoca, se sabe cuál fue y por qué.
 
-**El tablero de la página en vivo.** Al lado de la conversación hay una pestaña *Tablero* que se actualiza con cada mensaje que alguien escribe. Responde cinco preguntas de negocio, cada una con su lectura en una frase calculada de los datos: dónde se pierde el pedido (embudo), por qué no sirven las publicaciones (ruido del buscador y calidad del catálogo), qué piden y qué no encuentran (demanda sin atender y cuánto le faltó al presupuesto), qué hizo cada agente (propuestas usadas y rechazadas por el código) y cuánto cuesta frente a la comisión de una venta. Se filtra por visitantes, por tu conversación o por las pruebas grabadas de cada versión, y por producto. Los datos se descargan en CSV para Excel o Power BI. Solo guarda datos estructurados: nunca el texto que escribe la persona.
+**El tablero de la página en vivo.** Al lado de la conversación hay una pestaña *Tablero* que se actualiza con cada mensaje que alguien escribe. Responde cinco preguntas de negocio, cada una con su lectura en una frase calculada de los datos: dónde se pierde el pedido (embudo), por qué no sirven las publicaciones (ruido del buscador y calidad del catálogo), qué piden y qué no encuentran (demanda sin atender y cuánto le faltó al presupuesto), qué hizo cada agente y cuánto cuesta frente a la comisión de una venta. En las pruebas grabadas, que tienen respuesta correcta, responde dos más: qué tan bien elige cada versión (aciertos y errores graves) y qué cambió entre la corrida 1 y la 2. Se filtra por visitantes, por tu conversación o por las pruebas grabadas de cada versión y corrida, y por producto. Los datos se descargan en CSV para Excel o Power BI y, con una hoja de Google Sheets conectada, el uso de los visitantes queda guardado aunque la página se duerma. Solo guarda datos estructurados: nunca el texto que escribe la persona.
 
-**Por qué el revisor no corrige marca ni modelo.** La gente escribe los nombres de mil formas («la play 5», «el s26 de samsung»). Comprobar que «PlayStation 5 Slim» sale de «la play 5 slim» ya es interpretar, que es el trabajo del intérprete. El revisor solo toca lo que se puede comprobar letra por letra: cifras con su unidad, fechas, ciudades, colores, edición y estado.
+**Por qué el revisor no corrige marca ni modelo.** La gente escribe los nombres de mil formas («la play 5», «el s26 de samsung»). Comprobar que «PlayStation 5 Slim» sale de «la play 5 slim» ya es interpretar, que es el trabajo del intérprete. El revisor solo toca lo que se puede comprobar letra por letra: cifras con su unidad, fechas, ciudades, colores, edición y estado. En la corrida 1 no tuvo nada que corregir en 64 consultas, porque los errores de lectura de Gemini estaban justo en el modelo, que no puede tocar. Por eso quedó apagado.
 
 ## 5. Cómo se mide
 
@@ -160,9 +162,39 @@ En el pedido 9 la respuesta esperada cambia en la v2: una publicación no trae l
 
 El 25 de 25 con los pedidos de diseño no vale como resultado: es un examen que la versión sin IA ya conocía. Lo que cuenta son las variantes y las conversaciones.
 
-**Versión 1 y versión 2 con Gemini:** pendientes. El cuaderno `agente/pricex2_agente.ipynb` corre los tres exámenes con las tres versiones y completa estas tablas, junto con lo que hizo cada agente, el tiempo y el costo.
+**Versión 1 y versión 2 con Gemini 3.5 Flash-Lite,** dos corridas el 26 de noviembre de 2026. Mejor opción en el primer puesto y, entre paréntesis, errores graves:
 
-**Lo que encontró la corrida sin IA**
+| Examen | Sin IA | V1, corrida 1 | V2, corrida 1 | V1, corrida 2 | V2, corrida 2 |
+|---|---|---|---|---|---|
+| 30 pedidos de diseño | 25 de 25 (0) | 24 de 25 (0) | 24 de 25 (0) | 25 de 25 (0) | 25 de 25 (0) |
+| 30 variantes | 13 de 25 (4) | 23 de 25 (0) | 23 de 25 (0) | 25 de 25 (0) | 25 de 25 (0) |
+| 10 conversaciones | 6 de 9 (2) | 8 de 9 (0) | 8 de 9 (0) | 8 de 9 (0) | 9 de 9 (0) |
+
+| Costo y tiempo, medidos | V1 | V2, corrida 1 | V2, corrida 2 |
+|---|---|---|---|
+| Costo por pedido, con el mensaje redactado | US$ 0,0012 (unos $4) | US$ 0,0014 (unos $4,6) | US$ 0,0012 (unos $4) |
+| Costo por conversación de dos mensajes | US$ 0,0022 (unos $7) | US$ 0,0027 (unos $9) | US$ 0,0024 (unos $8) |
+| Tiempo típico de un pedido (mediana) | 3,9 s | 5,6 s | 4,0 s |
+
+Las tablas completas, caso por caso, están en `resultados/gemini` (corrida 2) y `resultados/gemini/corrida_1`.
+
+**Lo que mostró la corrida 1**
+
+1. **La IA se gana su costo donde la versión sin IA se rompía.** Con frases nuevas, de 13 a 23 de 25, y de 4 errores graves a 0. Y cuando la IA se equivocó, falló de forma segura: ninguna versión con IA recomendó algo que incumpliera el pedido.
+2. **Los 3 fallos de la v1 en pedidos y variantes eran de nuestra regla, no de la IA.** Gemini leyó «Paperwhite» de marca Amazon y «Note 14» de marca Xiaomi, que es correcto, pero la regla de modelos solo aceptaba «Kindle Paperwhite» y «Redmi Note 14» y descartó todas las opciones.
+3. **El equipo no superó a un solo agente.** Empató en la mejor opción en los tres exámenes, entendió peor una conversación, costó 15 % más por pedido y tardó más (5,6 contra 3,9 segundos).
+4. **Agente por agente:** el revisor hizo 64 consultas y no cambió nada. El buscador lo intentó 6 veces sin rescatar un caso, porque proponía sinónimos («smartphone», «teléfono celular») que no aparecen en los títulos. El coordinador no mejoró frente a pegar los mensajes y en la C7 agregó «plateado», un color que la persona nunca pidió: su revisión solo miraba las cifras. El lector acertó las 2 veces que actuó.
+
+**Lo que cambió para la corrida 2**
+
+1. La regla de modelos ya no exige la línea: «Paperwhite» de Amazon es el Kindle Paperwhite, y «Note 14» de Xiaomi es el Redmi Note 14. Las trampas siguen fuera (la edición Signature, el Kindle básico, el Note 14 Pro).
+2. El coordinador no puede agregar palabras que la persona no escribió. Si lo hace, se pegan los dos mensajes.
+3. El buscador propone marcas («celular xiaomi», «celular samsung») y no usa palabras de relleno.
+4. El revisor quedó apagado.
+
+**Lo que mostró la corrida 2:** las dos versiones con IA llegaron a 25 de 25 en pedidos y variantes. En conversaciones, la v2 llegó a 9 de 9: el buscador encontró el celular de la C1 y el código frenó el color inventado de la C7 (el coordinador lo volvió a proponer). En pedidos sueltos la v2 cuesta lo mismo que la v1, y en conversaciones 9 % más, justo donde ahora gana. Como casi todo salió de las respuestas guardadas, la corrida 2 necesitó solo 4 consultas nuevas al modelo.
+
+**Lo que encontró la versión sin IA**
 
 1. **Sin IA, el asistente se rompe con frases nuevas.** Con las variantes acertó 13 de 25. Fallan tres cosas: el orden de las palabras («Paperwhite de Kindle» terminó en el Kindle básico, «s26 de samsung» no se reconoció), la forma de decir el presupuesto («tengo 1.200.000 nada más», «de 150 mil para abajo») y los sinónimos («pantalla» por monitor, «refurbished», «la play 5»).
 2. **Los errores graves salen de entender mal, no de elegir mal.** Los 4 errores graves de las variantes fueron datos mal leídos: un televisor de 55 sin decir «pulgadas» terminó en uno de 50, un iPhone «refurbished» terminó en uno nuevo, un presupuesto de 1.200.000 se perdió y se recomendó uno de 1.449.000 sin avisar, y un Kindle Paperwhite terminó en el básico. Con el pedido bien entendido, las reglas aciertan 25 de 25.
@@ -179,16 +211,16 @@ Con cuatro supuestos:
 |---|---|---|
 | Comisión de afiliado de Mercado Libre Colombia | 4 % por venta | Mercado Libre paga hasta 10 % según la categoría; 4 % es un supuesto conservador |
 | Valor promedio de una compra | $1.000.000 | Supuesto |
-| Costo del modelo por mensaje | v1: unos $5 (US$ 0,0014). v2: unos $7 (US$ 0,002), porque suma al revisor y, en conversaciones, al coordinador | Estimado con el tamaño de las instrucciones y los precios de Gemini 3.5 Flash-Lite (US$ 0,30 y US$ 2,50 por millón de tokens); el cuaderno lo mide |
+| Costo del modelo por pedido | Unos $4 (US$ 0,0012) con la v1 y con la v2; en conversaciones, la v2 suma la consulta del coordinador | Medido en la corrida 2 con los precios de Gemini 3.5 Flash-Lite (US$ 0,30 y US$ 2,50 por millón de tokens) |
 | Dólar | $3.300 | TRM de mediados de noviembre de 2026 |
 
 | | v1 | v2 |
 |---|---|---|
 | Comisión por cada venta | $40.000 | $40.000 |
-| Costo de 1.000 mensajes | $5.000 | $7.000 |
-| Mensajes que paga una sola venta | 8.000 | Más de 5.000 |
+| Costo de 1.000 pedidos | $4.000 | $4.000 |
+| Pedidos que paga una sola venta | 10.000 | 10.000 |
 
-El equipo de agentes cuesta más o menos 40 % más por mensaje, y aun así una venta paga miles de mensajes. **El costo de la IA no es el problema; conseguir usuarios sí.** Como aplicación aparte, PriceX tendría que pagar por cada usuario que llega. Dentro de un marketplace, los usuarios ya están ahí, y el valor está en convertir más búsquedas en compras correctas y en reducir devoluciones. Por eso tiene más sentido como producto interno que como emprendimiento.
+Antes de medir, estimábamos que el equipo costaría 40 % más por mensaje; medido y ajustado, cuesta lo mismo en pedidos sueltos y 9 % más en conversaciones. En cualquier caso, una venta paga miles de mensajes. **El costo de la IA no es el problema; conseguir usuarios sí.** Como aplicación aparte, PriceX tendría que pagar por cada usuario que llega. Dentro de un marketplace, los usuarios ya están ahí, y el valor está en convertir más búsquedas en compras correctas y en reducir devoluciones. Por eso tiene más sentido como producto interno que como emprendimiento.
 
 ## 8. Cómo lo lanzaría dentro de Mercado Libre
 
@@ -237,6 +269,7 @@ Detalle de los controles y de cómo auditar una respuesta en [gobierno/README.md
 |---|---|
 | 1 | Catálogo simulado, reglas con prueba automática, versión sin IA congelada, un agente que interpreta y redacta, verificación de cifras y evaluación con dos exámenes |
 | 2 | Equipo de seis agentes con director en código, memoria de conversación, barandas verificables, tercer examen (conversaciones), un cuaderno que compara las tres versiones y página en vivo |
+| 2.1 | Dos corridas con Gemini y lo que cambió entre ellas (regla de modelos, coordinador sin palabras nuevas, buscador con marcas, revisor apagado), tablero con calidad y comparación de corridas, uso guardado en Google Sheets y página del proceso |
 | 3 | API real con búsquedas guardadas, entrega por código postal, opiniones, límite de días de entrega, pedidos y conversaciones de personas reales, alertas de precio |
 
 ## 12. Qué hay en el repositorio
@@ -244,15 +277,15 @@ Detalle de los controles y de cómo auditar una respuesta en [gobierno/README.md
 | Carpeta o archivo | Contenido |
 |---|---|
 | `datos` | `generar_datos.py` crea el catálogo simulado, los 30 pedidos y la clave; `variantes.csv` trae las 30 variantes; `generar_conversaciones.py` crea las 10 conversaciones con su respuesta esperada |
-| `pricex` | El asistente: datos sensibles, interpretación, versión sin IA (`linea_base.py`), búsqueda, reglas, redacción y verificación, evaluación. La v2 está en `multiagente.py` (el equipo y su director) y `evidencia.py` (las comprobaciones literales). El tablero, en `tablero.py` (los cálculos y las lecturas) y `tablero_vista.py` (cómo se ve) |
+| `pricex` | El asistente: datos sensibles, interpretación, versión sin IA (`linea_base.py`), búsqueda, reglas, redacción y verificación, evaluación. La v2 está en `multiagente.py` (el equipo y su director) y `evidencia.py` (las comprobaciones literales). El tablero, en `tablero.py` (los cálculos y las lecturas), `tablero_vista.py` (cómo se ve) y `hoja.py` (guardar el uso en Google Sheets) |
 | `agente` | `pricex2_agente.ipynb`, el cuaderno de Colab que corre las tres versiones con Gemini y las compara |
 | `pruebas` | Pruebas automáticas de las reglas, los controles y el equipo; modelos falsos para probar sin gastar consultas; prueba de tubería del cuaderno y prueba de la página en vivo |
-| `resultados` | `sin_ia`: corrida de la versión sin IA y la huella de su código. `gemini`: las corridas con IA, cuando se hagan |
+| `resultados` | `sin_ia`: corrida de la versión sin IA y la huella de su código. `gemini`: la corrida 2 con IA y, en `gemini/corrida_1`, la primera |
 | `gobierno` | Controles, barandas de cada agente y cómo auditar una respuesta |
 | `demo` | Página de una sola ventana que reproduce las respuestas grabadas, caso por caso, con el colador de descartes y la traza de los agentes. Se publica con GitHub Pages |
 | `proceso` | Cómo se construyó el proyecto, vuelta por vuelta: qué planteé yo, qué construyó la IA y cómo se midió. Se publica con GitHub Pages |
 | `app.py`, `requirements.txt`, `.streamlit` | La página en vivo: la conversación con el equipo y el tablero |
-| `despliegue` | Cómo publicar la página en vivo en Streamlit Community Cloud |
+| `despliegue` | Cómo publicar la página en vivo en Streamlit Community Cloud y conectar la hoja de uso |
 | `scripts` | `correr_sin_ia.py` corre la versión sin IA; `armar_cuaderno.py` arma el cuaderno; `armar_demo.py` actualiza los datos de la demo |
 
 ## 13. Cómo correrlo

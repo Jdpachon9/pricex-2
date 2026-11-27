@@ -17,12 +17,13 @@ import streamlit as st
 from pricex import tablero_vista as vista
 from pricex.agente import Asistente
 from pricex.catalogo import CatalogoSimulado
+from pricex.hoja import conectar as conectar_hoja
 from pricex.config import FECHA_HOY
 from pricex.multiagente import Conversacion, Equipo, atender_uniendo
 from pricex.reglas import MOTIVOS
 from pricex.respuesta import FRASES_MOTIVO, nombre_publicacion, texto_calificacion, texto_vendedor
 from pricex.sensibles import tapar_datos_sensibles
-from pricex.tablero import (COLUMNAS_CSV, RegistroDeUso, a_csv, evento_de, eventos_de_pruebas, filtrar, lecturas,
+from pricex.tablero import (comparar_corridas, corridas_de, lectura_corridas, COLUMNAS_CSV, RegistroDeUso, a_csv, evento_de, eventos_de_pruebas, filtrar, lecturas,
                             marcas_del_catalogo, nombre_producto, porcentaje, resumen, usd)
 from pricex.texto import fecha_larga, pesos
 
@@ -60,9 +61,19 @@ def marcas_conocidas():
 
 @st.cache_resource
 def registro_de_uso():
-    """Los registros de todos los visitantes: en memoria y en un archivo temporal mientras la app esté despierta."""
+    """Los registros de todos los visitantes. Con los secretos HOJA_DE_USO_URL y HOJA_DE_USO_CUENTA quedan en una hoja
+    de Google Sheets y sobreviven cuando la app se duerme; sin ellos, en memoria y en un archivo temporal."""
     ruta = os.environ.get("PRICEX_REGISTRO") or str(Path(tempfile.gettempdir()) / "pricex_eventos.jsonl")
-    return RegistroDeUso(ruta)
+    url, cuenta = secreto("HOJA_DE_USO_URL"), secreto("HOJA_DE_USO_CUENTA")
+    if not (url and cuenta):
+        return RegistroDeUso(ruta)
+    try:
+        return RegistroDeUso(ruta, hoja=conectar_hoja(url, cuenta))
+    except Exception as error:  # una hoja mal configurada no tumba la página
+        registro = RegistroDeUso(ruta)
+        registro.problema = (f"No se pudo conectar la hoja de Google Sheets ({type(error).__name__}). Revisa los "
+                             "secretos y que la hoja esté compartida con la cuenta de servicio.")
+        return registro
 
 
 @st.cache_resource
@@ -243,6 +254,12 @@ def mostrar_tablero():
     html(vista.ESTILO)
     st.caption("Se actualiza con cada mensaje que se escribe en la página. Guarda solo datos estructurados "
                "(producto, acción, motivos, tiempos y costo), nunca el texto que escribes.")
+    if registro.guarda_en_hoja:
+        st.caption("Los mensajes de los visitantes quedan guardados en una hoja de Google Sheets.")
+    elif registro.problema:
+        st.caption(registro.problema)
+    else:
+        st.caption("Los mensajes de los visitantes se guardan mientras la página esté despierta.")
     izquierda, derecha = st.columns([3, 2])
     fuente = izquierda.radio("Datos", FUENTES, horizontal=True, key="tablero_fuente")
     if fuente == "Todos los visitantes":
@@ -254,9 +271,18 @@ def mostrar_tablero():
         versiones = [v for v in NOMBRE_VERSION if any(e["version"] == v for e in pruebas)]
         version = izquierda.radio("Versión", versiones, format_func=NOMBRE_VERSION.get, horizontal=True,
                                   key="tablero_version")
-        eventos = filtrar(pruebas, version=version)
+        corridas = corridas_de(filtrar(pruebas, version=version))
+        corrida = corridas[-1] if corridas else None
+        if len(corridas) > 1:
+            corrida = izquierda.radio("Corrida", list(reversed(corridas)), horizontal=True, key="tablero_corrida",
+                                      format_func=lambda c: f"Corrida {c}" + (" (la actual)" if c == corridas[-1] else ""))
+        eventos = filtrar(pruebas, version=version, corrida=corrida)
         if len(versiones) == 1:
             izquierda.caption("Las versiones con IA aparecen cuando se agreguen los resultados del cuaderno de Colab.")
+        filas_corridas = comparar_corridas(pruebas)
+        if len({f["corrida"] for f in filas_corridas if f["corrida"]}) > 1:
+            html(vista.seccion("¿Qué cambió entre corridas?", lectura_corridas(filas_corridas)))
+            html(vista.tabla_corridas(filas_corridas))
     presentes = sorted({e["producto"] for e in eventos if e["producto"]}, key=nombre_producto)
     eleccion = derecha.selectbox("Producto", ["Todos"] + presentes, key="tablero_producto",
                                  format_func=lambda p: p if p == "Todos" else vista.mayuscula(nombre_producto(p)))
@@ -280,6 +306,9 @@ def mostrar_tablero():
     k4.metric("Costo por mensaje", usd(r["costo_promedio_usd"]) if r["costo_promedio_usd"] else "Sin IA",
               help="Promedio de los mensajes atendidos con IA, con los precios de Gemini 3.5 Flash-Lite.")
 
+    if r["calidad"] and r["calidad"]["recomendables"]:
+        html(vista.seccion("¿Qué tan bien elige?", frases.get("¿Qué tan bien elige?")))
+        html(vista.calidad(r["calidad"]))
     a, b = st.columns(2)
     with a:
         html(vista.seccion("¿Dónde se pierde el pedido?", frases.get("¿Dónde se pierde el pedido?")))

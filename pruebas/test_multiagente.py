@@ -156,5 +156,74 @@ class Conversaciones(unittest.TestCase):
         self.assertEqual(r["decision"]["opciones"][0]["id"], "MCOSIM1501")
 
 
+class LoQueEnsenoLaCorrida1(unittest.TestCase):
+    """Los cambios que salieron de la corrida 1 con Gemini (26 de noviembre de 2026)."""
+
+    def test_el_modelo_sin_la_linea_es_el_mismo_modelo(self):
+        from pricex.reglas import canon_modelo
+        self.assertEqual(canon_modelo("Paperwhite"), canon_modelo("Kindle Paperwhite"))
+        self.assertEqual(canon_modelo("Note 14"), canon_modelo("Redmi Note 14"))
+        self.assertEqual(canon_modelo("Kindle"), canon_modelo("Kindle"))
+        # Las trampas siguen fuera: otra edición, el modelo básico y el Pro no son el modelo pedido.
+        self.assertNotEqual(canon_modelo("Paperwhite"), canon_modelo("Kindle Paperwhite Signature Edition"))
+        self.assertNotEqual(canon_modelo("Kindle"), canon_modelo("Kindle Paperwhite"))
+        self.assertNotEqual(canon_modelo("Note 14"), canon_modelo("Redmi Note 14 Pro"))
+
+    def test_las_reglas_aceptan_las_lecturas_que_gemini_hizo_bien(self):
+        from pricex.catalogo import armar_consulta
+        from pricex.interpretar import vacia
+        from pricex.reglas import decidir
+        casos = [({"producto": "lector_libros", "marca": "Amazon", "modelo": "Paperwhite"}, "MCOSIM1001"),
+                 ({"producto": "celular", "marca": "Xiaomi", "modelo": "Note 14", "almacenamiento_gb": 256},
+                  "MCOSIM0901")]
+        for datos, ganador in casos:
+            pedido = {**vacia(), "accion": "recomendar", "condicion": "nuevo", **datos}
+            decision = decidir(pedido, CATALOGO.buscar(armar_consulta(pedido)), HOY)
+            ids = [o["id"] for o in decision["opciones"]]
+            self.assertEqual(ids[:1], [ganador], datos)
+            modelos = {CATALOGO.por_id[i]["modelo"] for i in ids}
+            self.assertFalse(modelos & {"Kindle", "Kindle Paperwhite Signature Edition", "Redmi Note 14 Pro"})
+
+    def test_el_coordinador_no_puede_agregar_palabras(self):
+        from pricex.evidencia import palabras_sin_respaldo
+        pegado = "audífonos sony wh-1000xm5. que lleguen mañana a Bogotá"
+        self.assertEqual(palabras_sin_respaldo("audífonos sony wh-1000xm5 plateado que lleguen mañana a Bogotá",
+                                               pegado), ["plateado"])
+        # Frases reales del Coordinador en la corrida 1 que sí estaban bien: tienen que seguir pasando.
+        buenas = {"C1": "un celular bueno y barato hasta 1 millón",
+                  "C2": "Samsung Galaxy S26 de 256 GB azul, máximo 4 millones",
+                  "C3": "una freidora de aire bonita para regalarle a mi mamá que no pase de 300 mil",
+                  "C4": "quiero cambiar el televisor de 55 pulgadas, máximo 2 millones",
+                  "C5": "iPhone 16 de 256",
+                  "C6": "portátil Lenovo con 16 de RAM, máximo 2,5 millones",
+                  "C10": "busco una cafetera Nespresso"}
+        textos = {c["id"]: ". ".join(t["texto"] for t in c["turnos"]) for c in CONVERSACIONES}
+        for n, frase in buenas.items():
+            self.assertEqual(palabras_sin_respaldo(frase, textos[n]), [], n)
+
+    def test_el_equipo_rechaza_el_pedido_con_un_color_inventado(self):
+        class CoordinadorQueInventa(ModeloColaborador):
+            def _coordinador(self, mensaje):
+                completo = mensaje.split("<pedido_anterior>\n")[1].split("\n")[0] + " plateado. " + \
+                           mensaje.split("<mensaje_nuevo>\n")[1].split("\n")[0]
+                return json.dumps({"movimiento": "ajuste", "pedido_completo": completo}, ensure_ascii=False)
+
+        equipo, conversacion = Equipo(CATALOGO, CoordinadorQueInventa(), hoy=HOY), Conversacion()
+        equipo.atender("audífonos sony wh-1000xm5", conversacion)
+        r = equipo.atender("que lleguen mañana a Bogotá", conversacion)
+        paso = next(p for p in r["traza"] if p["quien"] == "Coordinador")
+        self.assertEqual(paso["resultado"], "rechazado")
+        self.assertIn("plateado", paso["detalle"])
+        self.assertEqual(r["pedido_consolidado"], "audífonos sony wh-1000xm5. que lleguen mañana a Bogotá")
+        self.assertIsNone(r["interpretacion"]["color"])
+
+    def test_el_revisor_queda_apagado_salvo_que_se_prenda(self):
+        apagado, prendido = ModeloColaborador(), ModeloColaborador()
+        Equipo(CATALOGO, apagado).atender(PEDIDOS[0]["texto"])
+        Equipo(CATALOGO, prendido, usar_revisor=True).atender(PEDIDOS[0]["texto"])
+        self.assertNotIn("Revisor", {a for a, _ in apagado.consultas})
+        self.assertIn("Revisor", {a for a, _ in prendido.consultas})
+
+
 if __name__ == "__main__":
     unittest.main()

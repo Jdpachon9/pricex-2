@@ -16,8 +16,8 @@ ORIGEN = Path(__file__).resolve().parents[1]
 TEMPORAL = Path(tempfile.mkdtemp(prefix="pricex_prueba_"))
 PROYECTO = TEMPORAL / "pricex-2"
 shutil.copytree(ORIGEN, PROYECTO, ignore=shutil.ignore_patterns("resultados_gemini.zip", "__pycache__"))
-for archivo in (PROYECTO / "resultados" / "gemini").glob("*"):
-    archivo.unlink()
+for archivo in (PROYECTO / "resultados" / "gemini").glob("*"):  # incluida la carpeta de la corrida 1
+    shutil.rmtree(archivo) if archivo.is_dir() else archivo.unlink()
 sys.path.insert(0, str(PROYECTO))
 sys.path.insert(0, str(PROYECTO / "pruebas"))
 

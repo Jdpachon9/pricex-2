@@ -5,7 +5,8 @@ Quién hace qué
   en un solo pedido, y dice si es un ajuste, un pedido nuevo o algo fuera de alcance.
 - Intérprete (IA): el mismo de la versión 1. Convierte el pedido en datos.
 - Revisor (IA): relee el pedido y lo que entendió el Intérprete, y propone correcciones citando el pedazo exacto
-  del pedido que las respalda.
+  del pedido que las respalda. Apagado desde la corrida 1 con Gemini: 64 consultas y ningún cambio. Se prende con
+  USAR_REVISOR en config.py.
 - Buscador (IA): si quedaron pocas opciones y la búsqueda trajo poco, propone otras palabras de búsqueda.
 - Lector de atributos (IA): si una publicación no trae en su ficha un dato que la persona pidió, lo busca en el
   título, citando el pedazo exacto.
@@ -23,8 +24,9 @@ from datetime import timedelta
 
 from .catalogo import armar_consulta
 from .config import (CIUDAD_POR_DEFECTO, FECHA_HOY, MAX_BUSQUEDAS_EXTRA, MAX_PUBLICACIONES_LECTOR,
-                     MIN_RESULTADOS_DEL_PRODUCTO, OPCIONES_A_MOSTRAR, PRODUCTOS)
-from .evidencia import (CORREGIBLES, LEIBLES, aceptar_correccion, aceptar_lectura, como_numero, numeros)
+                     MIN_RESULTADOS_DEL_PRODUCTO, OPCIONES_A_MOSTRAR, PRODUCTOS, USAR_REVISOR)
+from .evidencia import (CORREGIBLES, LEIBLES, aceptar_correccion, aceptar_lectura, como_numero, numeros,
+                        palabras_sin_respaldo)
 from .interpretar import ajustar_accion, extraer_json, interpretar_con_ia, revisar_interpretacion, vacia
 from .reglas import NOMBRE_ATRIBUTO, canon_color, decidir, texto_valor
 from .respuesta import (ACLARACIONES, datos_para_explicar, explicar_con_ia, mensaje_plantilla, nombre_publicacion,
@@ -158,18 +160,25 @@ def instrucciones_buscador():
     return "\n".join([
         "Eres el buscador de PriceX 2.0, un asistente que ayuda a comparar productos en Mercado Libre Colombia.",
         "La búsqueda en el catálogo trajo pocas opciones para el pedido. Propón hasta 2 búsquedas nuevas, distintas "
-        "de las que ya se hicieron, que puedan encontrar más publicaciones del producto pedido: otras palabras para "
-        "el mismo producto, el modelo escrito de otra forma o marcas que vendan ese producto en Colombia.",
+        "de las que ya se hicieron, que puedan encontrar más publicaciones del producto pedido.",
+        "",
+        "CÓMO BUSCA EL CATÁLOGO",
+        "Compara tus palabras con los títulos de las publicaciones. Los títulos traen la marca y el modelo, y muchas "
+        "veces no dicen el nombre de la categoría. Por eso los sinónimos de la categoría casi nunca encuentran nada "
+        "nuevo.",
+        "- Si el pedido no trae marca ni modelo, propón marcas que vendan ese producto en Colombia, una marca por "
+        "búsqueda. Por ejemplo, para una bicicleta: \"bicicleta GW\" y \"bicicleta Optimus\".",
+        "- Si el pedido trae marca o modelo, escribe el modelo de otra forma (con o sin la línea, con o sin espacios).",
         "",
         "REGLAS",
-        "- Cada búsqueda tiene de 1 a 6 palabras, sin enlaces ni signos raros.",
-        "- Incluye el tipo de producto (por ejemplo \"celular\", \"televisor\", \"freidora\") o la marca y el modelo "
-        "pedidos.",
+        "- Cada búsqueda tiene de 1 a 4 palabras, sin enlaces ni signos raros.",
+        "- Sin palabras de relleno como \"nuevo\", \"original\", \"económico\" o \"Colombia\": no aparecen en los "
+        "títulos.",
         "- No necesitas filtrar: después unas reglas revisan cada publicación contra el pedido. Tu trabajo es "
         "encontrar candidatos.",
         "",
         "RESPUESTA",
-        "Solo un JSON con la lista busquedas. Ejemplo: {\"busquedas\": [\"freidora de aire Oster\", \"air fryer 5 litros\"]}",
+        "Solo un JSON con la lista busquedas. Ejemplo: {\"busquedas\": [\"bicicleta GW\", \"bicicleta Optimus\"]}",
     ])
 
 
@@ -262,7 +271,7 @@ class Equipo:
     """El director: decide qué agente trabaja y cuándo, y no usa nada que no pase su verificación."""
 
     def __init__(self, catalogo, llamar, redactar_con_ia=True, hoy=FECHA_HOY, ciudad_por_defecto=CIUDAD_POR_DEFECTO,
-                 tolerar_errores=False):
+                 tolerar_errores=False, usar_revisor=USAR_REVISOR):
         """'llamar(instrucciones, mensaje)' habla con el modelo. Con tolerar_errores=True (la página en vivo), si un
         agente falla el equipo sigue con el camino sin ese agente; en el cuaderno el error se muestra y se para."""
         if llamar is None:
@@ -273,6 +282,7 @@ class Equipo:
         self.hoy = hoy
         self.ciudad_por_defecto = ciudad_por_defecto
         self.tolerar_errores = tolerar_errores
+        self.usar_revisor = usar_revisor
 
     modo = "multiagente"
 
@@ -321,10 +331,13 @@ class Equipo:
             problemas.append("pedido vacío o demasiado largo")
         if re.search(r"https?://|www\.", completo, re.IGNORECASE):
             problemas.append("trae un enlace")
-        permitidas = numeros(texto_tapado) if movimiento in ("nuevo", "fuera") else numeros(unido)
-        sobran = sorted(numeros(completo) - permitidas)
+        fuente = texto_tapado if movimiento in ("nuevo", "fuera") else unido
+        sobran = sorted(numeros(completo) - numeros(fuente))
         if sobran:
             problemas.append("cifras que la persona no escribió: " + ", ".join(sobran))
+        agregadas = palabras_sin_respaldo(completo, fuente)
+        if agregadas:
+            problemas.append("palabras que la persona no escribió: " + ", ".join(agregadas))
         if problemas:
             traza.append(paso("Coordinador", "propuso un pedido que no pasó la revisión", "rechazado",
                               "; ".join(problemas) + f". Se usó el texto pegado: «{unido}»"))
@@ -492,9 +505,9 @@ class Equipo:
         entendido = describir(interpretacion)
         traza.append(paso("Intérprete", f"propuso {interpretacion['accion']}", "usado", entendido or "sin datos"))
 
-        # 3. Revisor: solo si se va a recomendar
+        # 3. Revisor: solo si se va a recomendar, y está apagado por defecto (ver USAR_REVISOR en config.py)
         correcciones = []
-        if interpretacion["accion"] == "recomendar":
+        if interpretacion["accion"] == "recomendar" and self.usar_revisor:
             interpretacion, correcciones = self._revisar(consolidado, interpretacion, tapados, llamadas, traza)
         respuesta.update(propuesta=propuesta, interpretacion=interpretacion, meta_interpretacion=meta,
                          accion=interpretacion["accion"], correcciones=correcciones)

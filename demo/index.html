@@ -183,7 +183,7 @@ footer { font-size: 14px; color: var(--tenue); border-top: 1px solid var(--linea
   <header>
     <h1>PriceX 2.0</h1>
     <p>Un asistente de compras: le escribes lo que quieres en una frase, revisa decenas de publicaciones y te muestra las 3 mejores, con el porqué. La IA entiende el pedido, las reglas eligen y la persona compra.</p>
-    <p class="tenue chico">Tres versiones con los mismos datos: sin IA (patrones de texto), v1 (un agente de IA) y v2 (un equipo de seis agentes con tareas fijas). Catálogo simulado de 205 publicaciones, congelado el 22 de noviembre de 2026. Precios, vendedores y entregas son inventados. Proyecto de portafolio, no afiliado a Mercado Libre.</p>
+    <p class="tenue chico">Tres versiones con los mismos datos: sin IA (patrones de texto), v1 (un agente de IA) y v2 (un equipo de agentes con tareas fijas; el revisor quedó apagado después de la primera medición). Catálogo simulado de 205 publicaciones, congelado el 22 de noviembre de 2026. Precios, vendedores y entregas son inventados. Proyecto de portafolio, no afiliado a Mercado Libre.</p>
   </header>
 
   <section class="controles" aria-label="Elegir pedido">
@@ -300,7 +300,7 @@ footer { font-size: 14px; color: var(--tenue); border-top: 1px solid var(--linea
     });
     var conIA = hayModo("v1") || hayModo("v2");
     document.getElementById("nota-modo").textContent = conIA
-      ? "Respuestas grabadas: sin IA y, con IA, la corrida con " + (datos.modelo || "Gemini") + "."
+      ? "Respuestas grabadas: sin IA y, con IA, la corrida 2 con " + (datos.modelo || "Gemini") + ", la de después de los cambios."
       : "Las versiones con IA (v1 y v2) se activan cuando se corra el cuaderno con Gemini. Por ahora se ve la versión sin IA.";
     var rejilla = document.getElementById("rejilla");
     rejilla.textContent = "";

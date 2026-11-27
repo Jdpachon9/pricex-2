@@ -37,9 +37,32 @@ La clave queda guardada en Streamlit, no en el repositorio. Si algún día la ca
 
 ## El tablero
 
-La página tiene dos pestañas: *Asistente* y *Tablero*. El tablero se actualiza con cada mensaje y se puede filtrar por todos los visitantes, por tu conversación o por las pruebas grabadas (sin IA y, cuando agregues `resultados/gemini`, v1 y v2). Abajo tiene la tabla de datos y un botón para descargarlos en CSV.
+La página tiene dos pestañas: *Asistente* y *Tablero*. El tablero se actualiza con cada mensaje y se puede filtrar por todos los visitantes, por tu conversación o por las pruebas grabadas. En las pruebas grabadas se elige la versión (sin IA, v1 o v2) y la corrida con Gemini (1 o 2), y aparecen dos preguntas más: *¿Qué tan bien elige?*, con los aciertos y errores graves contra la respuesta correcta, y *¿Qué cambió entre corridas?*, con el antes y el después de cada versión. Abajo tiene la tabla de datos y un botón para descargarlos en CSV.
 
-Los datos de los visitantes viven en la memoria de la app y en un archivo temporal: duran mientras la app está despierta y se borran cuando se duerme o se reinicia. Si quieres conservarlos, descarga el CSV antes. Guardarlos de forma permanente necesita una base de datos externa: queda como siguiente paso.
+Sin más configuración, los datos de los visitantes viven en la memoria de la app y se borran cuando se duerme o se reinicia. Para conservarlos, conecta una hoja de Google Sheets.
+
+## Guardar el uso en Google Sheets
+
+Con la hoja conectada, cada mensaje queda como una fila con las mismas columnas del CSV, y al despertar, la página la vuelve a leer. La hoja se abre directo en Power BI o en Excel. Solo guarda datos estructurados, nunca el texto que escriben las personas. Todo es gratis.
+
+1. **Crea la hoja.** En [sheets.new](https://sheets.new) crea una hoja vacía, ponle de nombre «PriceX 2.0: uso» y copia su enlace.
+2. **Crea un proyecto en Google Cloud.** En [console.cloud.google.com](https://console.cloud.google.com), arriba, elige *Seleccionar proyecto → Proyecto nuevo*, ponle `pricex-2` y créalo.
+3. **Activa la API de Google Sheets.** Con ese proyecto elegido, ve a *APIs y servicios → Biblioteca*, busca «Google Sheets API» y haz clic en **Habilitar**.
+4. **Crea la cuenta de servicio.** Es un usuario robot que va a escribir en la hoja. Ve a *APIs y servicios → Credenciales → Crear credenciales → Cuenta de servicio*, ponle `pricex-hoja`, haz clic en **Crear y continuar** y luego en **Listo** (no necesita roles).
+5. **Descarga su llave.** Abre la cuenta de servicio que creaste, entra a la pestaña *Claves* y elige *Agregar clave → Crear clave nueva → JSON*. Se descarga un archivo `.json`. Trátalo como una contraseña: no lo subas a GitHub ni lo muestres en pantallazos.
+6. **Comparte la hoja con el robot.** Abre el archivo `.json` con el Bloc de notas, copia el correo que aparece en `client_email` (termina en `iam.gserviceaccount.com`), y en la hoja haz clic en **Compartir**, pega ese correo y déjalo como **Editor**.
+7. **Agrega dos secretos en Streamlit.** En la app, entra a *Settings → Secrets* y, debajo de lo que ya tienes, pega esto con tu enlace y todo el contenido del archivo `.json` entre las comillas triples:
+
+   ```toml
+   HOJA_DE_USO_URL = "https://docs.google.com/spreadsheets/d/.../edit"
+   HOJA_DE_USO_CUENTA = '''
+   { pega aquí todo el contenido del archivo .json, tal cual }
+   '''
+   ```
+
+8. **Guarda y comprueba.** La app se reinicia sola. En la pestaña *Tablero* debe decir: «Los mensajes de los visitantes quedan guardados en una hoja de Google Sheets». Escribe un pedido y revisa que aparezca una fila nueva en la hoja.
+
+Si algo queda mal configurado, la página sigue funcionando y el tablero dice qué falló.
 
 ## Bueno saber
 

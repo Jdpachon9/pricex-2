@@ -194,6 +194,14 @@ correr_app(st, elecciones={"tablero_fuente": "Pruebas grabadas"})
 revisar(metrica(st, "Mensajes") == "80", "con «Pruebas grabadas» muestra las 80 respuestas de la corrida sin IA")
 correr_app(st, elecciones={"tablero_fuente": "Pruebas grabadas", "tablero_producto": "celular"})
 revisar(metrica(st, "Mensajes") == "18", "el filtro de producto deja solo los 18 mensajes de celulares")
+correr_app(st, elecciones={"tablero_fuente": "Pruebas grabadas", "tablero_version": "v2", "tablero_producto": "Todos"})
+pantalla = " ".join(t for _, t in st.pantalla)
+revisar(metrica(st, "Mensajes") == "80" and "59 de 59" in pantalla,
+        "la v2 abre en la corrida actual, con sus 80 mensajes y la mejor opción primera en 59 de 59")
+revisar("¿Qué cambió entre corridas?" in pantalla and "Corrida 1" in pantalla, "muestra el antes y el después")
+correr_app(st, elecciones={"tablero_fuente": "Pruebas grabadas", "tablero_version": "v2", "tablero_corrida": 1,
+                           "tablero_producto": "Todos"})
+revisar("55 de 59" in " ".join(t for _, t in st.pantalla), "con la corrida 1 vuelven los 55 aciertos de entonces")
 
 # 2. Con clave (Gemini falso): atiende el equipo de agentes y la conversación cambia el color
 registro_nuevo()
@@ -210,7 +218,7 @@ correr_app(st, elecciones={"tablero_fuente": "Tu conversación"})
 revisar(metrica(st, "Mensajes") == "2" and (metrica(st, "Costo por mensaje") or "").startswith("US$"),
         "«Tu conversación» muestra los 2 mensajes y el costo con IA")
 pantalla = " ".join(t for _, t in st.pantalla)
-revisar("Coordinador" in pantalla and "Revisor" in pantalla, "el tablero muestra lo que hizo cada agente")
+revisar("Coordinador" in pantalla and "Intérprete" in pantalla, "el tablero muestra lo que hizo cada agente")
 
 # 3. Se acaba la cuota: el equipo sigue sin los agentes que fallan y los mensajes siguientes van sin IA
 registro_nuevo()

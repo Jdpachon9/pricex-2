@@ -189,7 +189,7 @@ a { color: inherit; }
           <div class="grid" id="new" role="img" aria-label="6 cuadros naranjas, uno por cada día de PriceX 2.0"></div>
           <p>Seis días de PriceX 2.0, del 21 al 26 de noviembre de 2026</p>
         </div>
-        <figcaption id="days-cap">Cada cuadro es un día. En los seis años lancé dos productos, conseguí clientes, negocié con una de las cadenas más grandes del país y cerré lo que no daba. En los seis días, PriceX 2.0 pasó de una idea a un prototipo con <strong>seis agentes de IA, tres exámenes con 70 casos de respuesta conocida y un tablero de negocio</strong>.</figcaption>
+        <figcaption id="days-cap">Cada cuadro es un día. En los seis años lancé dos productos, conseguí clientes, negocié con una de las cadenas más grandes del país y cerré lo que no daba. En los seis días, PriceX 2.0 pasó de una idea a un prototipo con <strong>un equipo de agentes de IA, tres exámenes con 70 casos de respuesta conocida, dos mediciones con Gemini y un tablero de negocio</strong>.</figcaption>
       </figure>
     </div>
   </section>
@@ -265,7 +265,7 @@ a { color: inherit; }
               </ul>
             </div>
           </div>
-          <p class="turn__result"><strong>La baranda:</strong> ningún agente decide. Proponen, y el código acepta solo lo que puede comprobar. El equipo cuesta unos $7 por mensaje, 40 % más que un solo agente.</p>
+          <p class="turn__result"><strong>La baranda:</strong> ningún agente decide. Proponen, y el código acepta solo lo que puede comprobar.</p>
         </li>
 
         <li class="turn">
@@ -283,12 +283,12 @@ a { color: inherit; }
               <p>Un tablero al lado de la conversación que se actualiza con cada mensaje y responde cinco preguntas de negocio: dónde se pierde el pedido, por qué no sirven las publicaciones, qué piden y no encuentran, qué hizo cada agente y cuánto cuesta frente a lo que deja una venta. No guarda lo que escribe la persona, y los datos salen para Excel o Power BI.</p>
             </div>
           </div>
-          <p class="turn__result"><strong>Lo que deja ver:</strong> con una comisión del 4 % sobre una compra de $1.000.000, una venta paga más de 5.000 mensajes. El costo de la IA no es el problema; conseguir usuarios sí. Por eso PriceX 2.0 tiene más sentido dentro de un marketplace, donde los usuarios ya están, que como aplicación aparte.</p>
+          <p class="turn__result"><strong>Lo que deja ver:</strong> con una comisión del 4 % sobre una compra de $1.000.000, una venta paga unos 10.000 pedidos atendidos con IA. El costo de la IA no es el problema; conseguir usuarios sí. Por eso PriceX 2.0 tiene más sentido dentro de un marketplace, donde los usuarios ya están, que como aplicación aparte.</p>
         </li>
 
         <li class="turn">
           <p class="turn__date"><time datetime="2026-11-26">26 de noviembre</time></p>
-          <h3>Esta página y lo que sigue</h3>
+          <h3>Esta página</h3>
           <div class="turn__body">
             <div class="cell cell--me">
               <p class="cell__who">Yo planteo</p>
@@ -300,7 +300,53 @@ a { color: inherit; }
               <p>Esta página, con lo decidido en cada vuelta.</p>
             </div>
           </div>
-          <p class="turn__result"><strong>Lo que sigue:</strong> correr las versiones 1 y 2 con Gemini en los tres exámenes, publicar la página en vivo y escribir un memorando de una página con el uso real: qué medí, qué encontré y qué cambié. La corrida dirá si cada agente se gana su costo.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-26">26 de noviembre</time></p>
+          <h3>La primera medición con Gemini</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Medir con IA de verdad. Corrí el cuaderno en Colab con mi clave: las tres versiones en los tres exámenes.</p>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>El análisis caso por caso, con la traza de cada agente y el costo. Al revisar los fallos encontró que tres no eran de la IA sino de nuestra regla de modelos: Gemini había leído bien «Paperwhite» y «Note 14», y la regla solo aceptaba «Kindle Paperwhite» y «Redmi Note 14».</p>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Lo que mostró:</strong> el equipo no superaba a un solo agente. Empató en la mejor opción, costó 15 % más y tardó más. El revisor no cambió nada en 64 consultas, el buscador no rescató ningún caso y el coordinador agregó «plateado», un color que la persona nunca pidió.</p>
+        </li>
+
+        <li class="turn">
+          <p class="turn__date"><time datetime="2026-11-26">26 de noviembre</time></p>
+          <h3>La segunda vuelta</h3>
+          <div class="turn__body">
+            <div class="cell cell--me">
+              <p class="cell__who">Yo planteo</p>
+              <p>Aprobé la segunda vuelta antes de publicar números: corregir la regla, cerrarle al coordinador las palabras nuevas, cambiar el buscador a marcas y apagar el revisor. Y pregunté lo que más me importaba:</p>
+              <blockquote>«Lo más importante: ¿está quedando todo en el dashboard para aplicar la inteligencia de negocios?»</blockquote>
+            </div>
+            <svg class="arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h12M10 4.5 15.5 10 10 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="cell cell--ai">
+              <p class="cell__who">La IA construye</p>
+              <p>Los cuatro cambios, cada uno con su prueba automática, y una segunda corrida que reutilizó las respuestas guardadas: solo 4 consultas nuevas al modelo. El tablero ahora mide la calidad de cada versión, compara las corridas y puede guardar el uso real en Google Sheets.</p>
+            </div>
+          </div>
+          <div class="meter" role="group" aria-labelledby="meter-cap-2">
+            <p class="meter__cap" id="meter-cap-2">Equipo de agentes: mejor opción en el primer puesto en los tres exámenes</p>
+            <div class="meter__row" title="55 de 59 casos">
+              <span>Corrida 1</span><b>55 de 59</b>
+              <div class="meter__track"><div class="meter__fill" style="width:93.2%"></div></div>
+            </div>
+            <div class="meter__row" title="59 de 59 casos">
+              <span>Corrida 2, después de los cambios</span><b>59 de 59</b>
+              <div class="meter__track"><div class="meter__fill" style="width:100%"></div></div>
+            </div>
+          </div>
+          <p class="turn__result"><strong>Lo que mostró:</strong> sin errores graves en ninguna corrida, el equipo llegó a 59 de 59 y ahora le gana a un solo agente en conversaciones: 9 de 9 contra 8 de 9. En pedidos sueltos cuesta lo mismo, unos $4, y en conversaciones 9 % más, justo donde gana.</p>
+          <p class="turn__result"><strong>Lo que sigue:</strong> la página en vivo ya está publicada. Falta conectar su hoja de uso y escribir un memorando de una página con el uso real: qué medí, qué encontré y qué cambié.</p>
         </li>
       </ol>
     </div>
@@ -328,7 +374,7 @@ a { color: inherit; }
           </div>
           <div class="lesson__now">
             <span>En PriceX 2.0</span>
-            <p>En 2018, una caída de 10 minutos podía costarnos $10.000.000 frente a una comisión de $15.000. Aquí ningún agente puede inventar un precio ni comprar, y la página en vivo tiene un tope de mensajes por día: el peor día cuesta unos $2.000 de IA.</p>
+            <p>En 2018, una caída de 10 minutos podía costarnos $10.000.000 frente a una comisión de $15.000. Aquí ningún agente puede inventar un precio ni comprar, y la página en vivo tiene un tope de mensajes por día: el peor día cuesta unos $1.200 de IA.</p>
           </div>
         </li>
         <li class="lesson from-tc">
@@ -355,6 +401,7 @@ a { color: inherit; }
             <li>Escribió casi todo el código y las pruebas automáticas.</li>
             <li>Simuló el catálogo, los pedidos, las variantes y las conversaciones.</li>
             <li>Propuso la arquitectura de los agentes, sus barandas y la forma de medirlos.</li>
+            <li>Analizó cada corrida caso por caso y propuso qué cambiar.</li>
             <li>Redactó la documentación y una guía de estudio para que yo pueda explicar cada decisión.</li>
           </ul>
         </div>
@@ -364,6 +411,7 @@ a { color: inherit; }
             <li>Elegí el problema y el enfoque: un producto interno para un marketplace, que no exige capital.</li>
             <li>Pedí cada salto: el equipo de agentes, el tablero que se mueve con el uso y las conclusiones de negocio.</li>
             <li>Evalué cada entrega y decidí qué seguía.</li>
+            <li>Corrí las dos mediciones con Gemini y aprobé la segunda vuelta antes de publicar números.</li>
             <li>Ordené el proyecto para que se pueda leer, auditar y defender.</li>
           </ul>
         </div>
@@ -373,6 +421,7 @@ a { color: inherit; }
         <p>Es lo que llevo a un equipo: entender un modelo de negocio y su peor caso, encontrar dónde falla un producto midiendo contra una versión sin IA, y diseñar y lanzar desde cero. Con IA lo hago en días y a bajo costo: PriceX 2.0 se publica sin pagar servidores, con GitHub Pages, Streamlit Community Cloud y la capa gratuita de Gemini.</p>
       </div>
       <div class="links">
+        <a href="https://pricex-2.streamlit.app/">Probarlo en vivo</a>
         <a href="https://github.com/Jdpachon9/pricex-2">Código y ficha del producto</a>
         <a href="https://jdpachon9.github.io/pricex-2/demo/">Demo con respuestas grabadas</a>
         <a href="https://jdpachon9.github.io/pricex-tecompro/">PriceX y Tecompro.co, con video</a>
@@ -385,7 +434,7 @@ a { color: inherit; }
   <div class="wrap">
     <p><span class="foot__name">Juan David Pachón Moya</span>. Product Manager: productos digitales, datos e IA.</p>
     <p><a href="https://www.linkedin.com/in/juan-david-pachon-moya-00554417b/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
-    <p class="foot__note">PriceX 2.0 usa un catálogo simulado con la forma de la API de Mercado Libre y no está afiliado a Mercado Libre. Los costos son estimados con los precios de Gemini 3.5 Flash-Lite de noviembre de 2026, y las corridas con Gemini de las versiones 1 y 2 están pendientes. Los días de PriceX y Tecompro.co son aproximados.</p>
+    <p class="foot__note">PriceX 2.0 usa un catálogo simulado con la forma de la API de Mercado Libre y no está afiliado a Mercado Libre. Los costos se midieron en las corridas con Gemini 3.5 Flash-Lite, con sus precios de noviembre de 2026 y un dólar de $3.300. Los días de PriceX y Tecompro.co son aproximados.</p>
   </div>
 </footer>
 

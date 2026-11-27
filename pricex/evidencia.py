@@ -178,6 +178,37 @@ def numeros(texto):
     return set(re.findall(r"\d+", texto or ""))
 
 
+# Palabras de enlace que el Coordinador puede usar para armar la frase sin agregar ningún dato.
+CONECTORES = {"a", "al", "con", "de", "del", "e", "el", "en", "es", "la", "las", "lo", "los", "me", "mi", "mis", "o",
+              "para", "por", "que", "se", "sea", "su", "sus", "un", "una", "unas", "unos", "y"}
+
+
+def raiz(palabra):
+    """Forma básica para comparar palabras, sin plural ni género: 'bonitas' -> 'bonit', 'millones' -> 'millon'."""
+    if len(palabra) > 4 and palabra.endswith("es"):
+        palabra = palabra[:-2]
+    elif len(palabra) > 3 and palabra.endswith("s"):
+        palabra = palabra[:-1]
+    if len(palabra) > 4 and palabra[-1] in "ao":
+        palabra = palabra[:-1]
+    return palabra
+
+
+def palabras_sin_respaldo(texto, fuente):
+    """Las palabras de 'texto' que no salen de 'fuente', lo que escribió la persona. Las cifras se revisan aparte.
+
+    palabras_sin_respaldo('audífonos Sony plateados', 'audífonos sony')  -> ['plateados']
+    La corrida 1 mostró por qué hace falta: el Coordinador agregó «plateado», un color que la persona nunca pidió,
+    y la revisión de entonces solo miraba las cifras."""
+    disponibles = {raiz(p) for p in re.findall(r"[a-z0-9]+", normalizar(fuente))}
+    nuevas = []
+    for p in re.findall(r"[a-z0-9]+", normalizar(texto)):
+        if p.isdigit() or p in CONECTORES or raiz(p) in disponibles or p in nuevas:
+            continue
+        nuevas.append(p)
+    return nuevas
+
+
 # ---------------------------------------------------------------- reglas de aceptación de cada agente
 # El Revisor solo corrige datos que se pueden comprobar letra por letra: cifras, fecha, ciudad, color, edición y
 # estado. Producto, marca y modelo no: la gente los escribe de mil formas («la play 5») y el código no puede

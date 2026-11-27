@@ -52,9 +52,15 @@ def canon_marca(texto):
 
 
 def canon_modelo(texto):
-    """Forma comparable de un modelo: 'Galaxy S26+' -> 's26+', 'PS5 Slim' -> 'playstation5slim'."""
+    """Forma comparable de un modelo: 'Galaxy S26+' -> 's26+', 'Kindle Paperwhite' -> 'paperwhite',
+    'Redmi Note 14' -> 'note14', 'PS5 Slim' -> 'playstation5slim'.
+
+    Las líneas Redmi y Kindle solo se quitan si después viene el modelo: así 'Paperwhite' de Amazon y 'Kindle
+    Paperwhite' son el mismo modelo, pero 'Kindle' a secas sigue siendo el Kindle básico. La corrida 1 con Gemini
+    mostró que la IA leía bien 'Paperwhite' y 'Note 14', y era esta regla la que descartaba todas las opciones."""
     t = normalizar(texto).replace("plus", "+")
     t = re.sub(r"\b(samsung|apple|sony|xiaomi|amazon|lenovo|galaxy)\b", " ", t)
+    t = re.sub(r"\b(redmi|kindle)\b(?=\s*[a-z0-9])", " ", t)
     t = re.sub(r"\bps ?5\b", "playstation 5", t)
     return re.sub(r"[^a-z0-9+]", "", t)
 

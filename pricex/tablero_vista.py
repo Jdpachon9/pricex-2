@@ -13,11 +13,12 @@ from .respuesta import FRASES_MOTIVO
 from .tablero import AGENTES, NOMBRE_VERSION_CORTO, RESULTADOS, SITUACIONES, nombre_producto, usd
 from .texto import decimal, pesos
 
-AZUL = "#257de0"
+AZUL = "#8d1bf4"  # morado de la identidad original de PriceX (se deja el nombre para no tocar el resto)
 GRIS = "rgba(128,128,128,.45)"  # «Otros»: lo que se junta al final no compite con las barras con nombre
-EMBUDO = ["#84b9f3", "#519ced", "#257de0", "#1b64be"]  # escala ordenada: más oscuro, más cerca del resultado
-COLOR_RESULTADO = {"usado": "#257de0", "sin cambios": "rgba(128,128,128,.45)", "rechazado": "#f47230",
-                   "falló": "#dc3c3d"}
+EMBUDO = ["#d2b4fb", "#b07cf8", "#8d1bf4", "#6512b8"]  # escala ordenada: más oscuro, más cerca del resultado
+# Probada con el validador de daltonismo: morado, naranja y vino se distinguen; «sin cambios» va en gris.
+COLOR_RESULTADO = {"usado": "#8d1bf4", "sin cambios": "rgba(128,128,128,.45)", "rechazado": "#f47230",
+                   "falló": "#a11a2b"}
 
 ESTILO = """<style>
 .px{font-size:15px;line-height:1.45}

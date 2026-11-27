@@ -285,6 +285,7 @@ Detalle de los controles y de cómo auditar una respuesta en [gobierno/README.md
 | `demo` | Página de una sola ventana que reproduce las respuestas grabadas, caso por caso, con el colador de descartes y la traza de los agentes. Se publica con GitHub Pages |
 | `proceso` | Cómo se construyó el proyecto, vuelta por vuelta: qué planteé yo, qué construyó la IA y cómo se midió. Se publica con GitHub Pages |
 | `app.py`, `requirements.txt`, `.streamlit` | La página en vivo: la conversación con el equipo y el tablero |
+| `marca/` | Logo e ícono originales de PriceX (2018), usados en la página en vivo |
 | `despliegue` | Cómo publicar la página en vivo en Streamlit Community Cloud y conectar la hoja de uso |
 | `scripts` | `correr_sin_ia.py` corre la versión sin IA; `armar_cuaderno.py` arma el cuaderno; `armar_demo.py` actualiza los datos de la demo |
 

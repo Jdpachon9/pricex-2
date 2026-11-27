@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
+from PIL import Image
 
 from pricex import tablero_vista as vista
 from pricex.agente import Asistente
@@ -39,8 +40,30 @@ EJEMPLOS = [
 ]
 FUENTES = ["Todos los visitantes", "Tu conversación", "Pruebas grabadas"]
 NOMBRE_VERSION = {"sin IA": "Sin IA", "v1": "V1: un agente", "v2": "V2: equipo"}
+MARCA = RAIZ / "marca"          # logo e ícono originales de PriceX (2018)
+LOGO, ICONO = MARCA / "pricex-logo.png", MARCA / "pricex-icono.png"
+AVATAR = {"assistant": str(ICONO)} if ICONO.exists() else {}
+ESTILO_MARCA = """<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+[data-testid="stDecoration"]{background-image:linear-gradient(90deg,#8D1BF4 0%,#D237F5 55%,#5F1BEE 100%);height:6px}
+.px-marca{font-family:'Montserrat',system-ui,sans-serif;font-weight:700;font-size:1.35rem;letter-spacing:-.01em;
+  color:#16141F;margin:-.35rem 0 .7rem}
+h1,h2,h3{font-family:'Montserrat',system-ui,sans-serif}
+[data-testid="stSidebar"] .stButton button{justify-content:flex-start;text-align:left;background:#FFFFFF;
+  border-color:#E6D6FD}
+[data-testid="stSidebar"] .stButton button:hover{border-color:#8D1BF4;color:#8D1BF4}
+.stTabs [data-baseweb="tab"][aria-selected="true"] p{color:#8D1BF4;font-weight:600}
+</style>"""
 
-st.set_page_config(page_title="PriceX 2.0 · asistente de compras (demo)", page_icon="🛒", layout="centered")
+def icono_de_pagina():
+    """Ícono de la pestaña del navegador: la X del logo original (un carrito si falta el archivo)."""
+    try:
+        return Image.open(ICONO)
+    except OSError:
+        return "🛒"
+
+
+st.set_page_config(page_title="PriceX | Asistente de compras (demo)", page_icon=icono_de_pagina(), layout="centered")
 
 
 def md(texto):
@@ -218,7 +241,7 @@ def mostrar_detalles(respuesta, ver_traza):
 
 
 def mostrar(mensaje, ver_traza):
-    with st.chat_message(mensaje["rol"]):
+    with st.chat_message(mensaje["rol"], avatar=AVATAR.get(mensaje["rol"])):
         if mensaje["rol"] == "user":
             st.markdown(md(mensaje["texto"]))
             return
@@ -333,7 +356,14 @@ def mostrar_tablero():
 
 
 # ---------------------------------------------------------------- la página
-st.title("PriceX 2.0")
+html(ESTILO_MARCA)
+if hasattr(st, "logo") and ICONO.exists():
+    st.logo(str(ICONO))
+if LOGO.exists():
+    st.image(str(LOGO), width=230)
+else:
+    st.title("PriceX")
+html('<div class="px-marca">Asistente de compras</div>')
 st.markdown("Escribe en una frase lo que quieres comprar. Un equipo de agentes de IA entiende tu pedido, unas reglas "
             "fijas eligen las 3 mejores opciones y tú decides.")
 st.caption(f"Proyecto de portafolio. Catálogo simulado del {fecha_larga(FECHA_HOY)} de {FECHA_HOY.year}: precios, "

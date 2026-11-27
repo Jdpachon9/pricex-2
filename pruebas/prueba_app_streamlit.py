@@ -74,7 +74,8 @@ class StreamlitFalso(tipos.ModuleType):
     def toggle(self, etiqueta, value=False, **_): return value
     def container(self, **_): return Bloque(self, "tarjeta")
     def expander(self, etiqueta, **_): return Bloque(self, "desplegable: " + etiqueta)
-    def chat_message(self, rol): return Bloque(self, "mensaje de " + rol)
+    def chat_message(self, rol, **_): return Bloque(self, "mensaje de " + rol)
+    def image(self, imagen, **_): self._anotar("imagen", Path(str(imagen)).name)
     def spinner(self, texto): return Bloque(self, "esperando")
     def tabs(self, nombres): return [Bloque(self, "pestaña: " + n) for n in nombres]
     def columns(self, spec): return [Bloque(self, "columna") for _ in range(spec if isinstance(spec, int) else len(spec))]
